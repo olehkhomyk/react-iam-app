@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../core/auth/useAuth";
 import { useEffect, useState } from 'react';
 import { http } from '../core/api/http';
-import type {Pagination, Post, PostsPayload} from "../core/models";
+import type {Pagination, Post, PostsPayload} from "../models";
 import type {ApiResponse} from "../core/api/types.ts";
 
 export default function Dashboard() {

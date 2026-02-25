@@ -3,7 +3,7 @@ import { authTokens } from "./authTokens";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL as string;
 const SKIP_REFRESH_URLS = ['/auth/login', '/auth/refresh', '/auth/register'];
-const BAREAR_PREFIX = 'Bearer';
+const BEARER_PREFIX = 'Bearer';
 
 export const http = axios.create({
     baseURL: API_BASE_URL,
@@ -14,7 +14,7 @@ export const http = axios.create({
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const token = authTokens.getAccess();
     if (token) {
-        config.headers.Authorization = `${BAREAR_PREFIX} ${token}`;
+        config.headers.Authorization = `${BEARER_PREFIX} ${token}`;
     }
     return config;
 });
@@ -36,10 +36,9 @@ async function refreshAccessToken(): Promise<string> {
     const refreshToken = authTokens.getRefresh();
     if (!refreshToken) throw new Error("No refresh token");
 
-    const plain = axios.create({ baseURL: API_BASE_URL, withCredentials: true });
-
+    const plain = axios.create({ baseURL: API_BASE_URL });
     const res = await plain.post("/auth/refresh", { refreshToken });
-    // очікую формат { accessToken, refreshToken? }
+
     authTokens.set(res.data);
     return res.data.accessToken as string;
 }
@@ -67,7 +66,7 @@ http.interceptors.response.use(
 
             const newAccessToken = await refreshPromise!;
             originalConfig.headers = originalConfig.headers ?? {};
-            originalConfig.headers.Authorization = `${BAREAR_PREFIX} ${newAccessToken}`;
+            originalConfig.headers.Authorization = `${BEARER_PREFIX} ${newAccessToken}`;
 
             return http.request(originalConfig);
         } catch (refreshErr) {

@@ -1,6 +1,6 @@
 import { http } from "./http";
 import {authTokens} from "./authTokens.ts";
-import type { AuthResponse } from "./types";
+import type { AuthResponse, UserResponse, TokenResponse, UserProfile } from "./types";
 
 
 export interface LoginRequest {
@@ -16,7 +16,7 @@ export interface RegisterRequest {
 /**
  * Login user with email and password
  */
-export async function login(credentials: LoginRequest): Promise<AuthResponse['payload']> {
+export async function login(credentials: LoginRequest): Promise<TokenResponse> {
     const response = await http.post<AuthResponse>("/auth/login", credentials);
     return response.data.payload;
 }
@@ -24,8 +24,16 @@ export async function login(credentials: LoginRequest): Promise<AuthResponse['pa
 /**
  * Register new user
  */
-export async function register(userData: RegisterRequest): Promise<AuthResponse['payload']> {
+export async function register(userData: RegisterRequest): Promise<TokenResponse> {
     const response = await http.post<AuthResponse>("/auth/register", userData);
+    return response.data.payload;
+}
+
+/**
+ * Get current authenticated user
+ */
+export async function getCurrentUser(): Promise<UserProfile> {
+    const response = await http.get<UserResponse>("/users/me");
     return response.data.payload;
 }
 

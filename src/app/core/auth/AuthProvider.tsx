@@ -1,82 +1,95 @@
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { authTokens } from "../api/authTokens";
+import { login as apiLogin, register as apiRegister, logout as apiLogout, getCurrentUser } from "../api/auth.api";
+import type { AuthUser } from "./AuthContext";
+import { AuthContext } from "./AuthContext";
+import { GlobalSpinner } from "../components";
 
- import React, { useEffect, useMemo, useState } from "react";
- import { authTokens } from "../api/authTokens";
- import { login as apiLogin, register as apiRegister, logout as apiLogout } from "../api/auth.api";
- import type { AuthUser } from "./AuthContext";
- import { AuthContext } from "./AuthContext";
-
- const AUTH_USER_KEY = "auth_user";
-
- function readStoredUser(): AuthUser | null {
- 	const raw = localStorage.getItem(AUTH_USER_KEY);
- 	if (!raw) return null;
- 	try {
- 		return JSON.parse(raw) as AuthUser;
- 	} catch {
- 		localStorage.removeItem(AUTH_USER_KEY);
- 		return null;
- 	}
- }
-
- function storeUser(user: AuthUser | null) {
- 	if (!user) {
- 		localStorage.removeItem(AUTH_USER_KEY);
- 		return;
- 	}
- 	localStorage.setItem(AUTH_USER_KEY, JSON.stringify(user));
- }
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    const storedUser = readStoredUser();
-    const access = authTokens.getAccess();
-    return access && storedUser ? storedUser : null;
-  });
-  const [isLoading] = useState(false);
+	const [user, setUser] = useState<AuthUser | null>(null);
+	const [isInitializing, setIsInitializing] = useState(true);
 
-  useEffect(() => {
-    const storedUser = readStoredUser();
-    const access = authTokens.getAccess();
+	const refreshUser = useCallback(async () => {
+		const userData = await getCurrentUser();
+		setUser(userData);
+	}, []);
 
-    if (!access || !storedUser) {
-      authTokens.clear();
-      storeUser(null);
-    }
-  }, []);
+	useEffect(() => {
+		const initAuth = async () => {
+			const accessToken = authTokens.getAccess();
 
-  const login = async (email: string, password: string) => {
-    const profile = await apiLogin({ email, password });
-    if (!profile.token) throw new Error("Login response did not include token");
-    authTokens.set({ accessToken: profile.token, refreshToken: profile.refreshToken });
-    storeUser(profile);
-    setUser(profile);
-  };
+			if (!accessToken) {
+				setIsInitializing(false);
+				return;
+			}
 
-  const register = async (email: string, password: string, username?: string) => {
-    const profile = await apiRegister({ email, password, username });
-    if (!profile.token) throw new Error("Register response did not include token");
-    authTokens.set({ accessToken: profile.token, refreshToken: profile.refreshToken });
-    storeUser(profile);
-    setUser(profile);
-  };
+			try {
+				await refreshUser();
+			} catch (error) {
+				console.error("Failed to fetch user:", error);
+				authTokens.clear();
+				setUser(null);
+			} finally {
+				setIsInitializing(false);
+			}
+		};
 
-  const logout = () => {
-    apiLogout();
-    authTokens.clear();
-    storeUser(null);
-    setUser(null);
-  };
+		initAuth();
+	}, [refreshUser]);
 
-  const value = useMemo(
-    () => ({
-      user,
-      isLoading,
-      isAuthenticated: !!user && !!authTokens.getAccess(),
-      login,
-      register,
-      logout,
-    }),
-    [user, isLoading]
-  );
+	const login = useCallback(async (email: string, password: string) => {
+		const tokens = await apiLogin({ email, password });
+		authTokens.set({ accessToken: tokens.token, refreshToken: tokens.refreshToken });
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+		try {
+			await refreshUser();
+		} catch (error) {
+			// If we cannot fetch the current user after login, treat it as an auth failure.
+			authTokens.clear();
+			setUser(null);
+			throw error;
+		}
+	}, [refreshUser]);
+
+	const register = useCallback(async (email: string, password: string, username?: string) => {
+		const tokens = await apiRegister({ email, password, username });
+		authTokens.set({ accessToken: tokens.token, refreshToken: tokens.refreshToken });
+
+		try {
+			await refreshUser();
+		} catch (error) {
+			authTokens.clear();
+			setUser(null);
+			throw error;
+		}
+	}, [refreshUser]);
+
+	const logout = useCallback(() => {
+		// Best-effort server logout; always clear local auth state.
+		try {
+			apiLogout();
+		} finally {
+			authTokens.clear();
+			setUser(null);
+		}
+	}, []);
+
+	const isAuthenticated = !!authTokens.getAccess() && !!user;
+
+	const value = useMemo(
+		() => ({
+			user,
+			isAuthenticated,
+			login,
+			register,
+			logout,
+		}),
+		[user, isAuthenticated, login, register, logout]
+	);
+
+	if (isInitializing) {
+		return <GlobalSpinner/>;
+	}
+
+	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
