@@ -1,9 +1,41 @@
 import { useNavigate } from 'react-router-dom';
- import { useAuth } from "../core/auth/useAuth";
+import { useAuth } from "../core/auth/useAuth";
+import { useEffect, useState } from 'react';
+import { http } from '../core/api/http';
+import type {Pagination, Post, PostsPayload} from "../core/models";
+import type {ApiResponse} from "../core/api/types.ts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [pagination, setPagination] = useState<Pagination | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPosts = async (page: number = 1, limit: number = 5, signal?: AbortSignal) => {
+    try {
+      setLoading(true);
+      const response = await http.get<ApiResponse<PostsPayload>>(`/posts/all?page=${page - 1}&limit=${limit}`, { signal });
+      setPosts(response.data.payload.content);
+      setPagination(response.data.payload.pagination);
+    } catch (err: any) {
+      if (err.name === 'CanceledError') return;
+      setError('Failed to fetch posts');
+      console.error('Error fetching posts:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const abortController = new AbortController();
+    fetchPosts(1, 5, abortController.signal);
+    
+    return () => {
+      abortController.abort();
+    };
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -40,145 +72,68 @@ export default function Dashboard() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
-          {/* Welcome Section */}
-          <div className="bg-white overflow-hidden shadow rounded-lg mb-6">
+          {/* Posts Section */}
+          <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
-              <h2 className="text-lg leading-6 font-medium text-gray-900 mb-2">
-                Welcome to your Dashboard!
+              <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                Recent Posts
               </h2>
-              <p className="text-sm text-gray-500">
-                You have successfully logged in. This is your protected dashboard area.
-              </p>
-            </div>
-          </div>
-
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-indigo-500 rounded-md flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
+              
+              {loading ? (
+                <div className="text-center py-8">
+                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+                  <p className="mt-2 text-sm text-gray-500">Loading posts...</p>
+                </div>
+              ) : error ? (
+                <div className="text-center py-8">
+                  <p className="text-red-500">{error}</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {posts.map((post) => (
+                    <div key={post.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                      <div className="flex justify-between items-start mb-2">
+                        <h3 className="text-base font-semibold text-gray-900">{post.title}</h3>
+                        <span className="text-xs text-gray-500">{new Date(post.created).toLocaleDateString()}</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">{post.content}</p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <span>By: {post.createdBy}</span>
+                          <span className="flex items-center">
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                            </svg>
+                            {post.likes} likes
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                      <dd className="text-lg font-medium text-gray-900">1,234</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-green-500 rounded-md flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
+                  ))}
+                  
+                  {pagination && pagination.pages > 1 && (
+                    <div className="flex justify-center mt-6 space-x-2">
+                      <button
+                        onClick={() => fetchPosts(pagination.page - 1)}
+                        disabled={pagination.page <= 1}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Previous
+                      </button>
+                      <span className="px-3 py-2 text-sm text-gray-600">
+                        Page {pagination.page} of {pagination.pages}
+                      </span>
+                      <button
+                        onClick={() => fetchPosts(pagination.page + 1)}
+                        disabled={pagination.page >= pagination.pages}
+                        className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Next
+                      </button>
                     </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Active Sessions</dt>
-                      <dd className="text-lg font-medium text-gray-900">89</dd>
-                    </dl>
-                  </div>
+                  )}
                 </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-yellow-500 rounded-md flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Avg. Session</dt>
-                      <dd className="text-lg font-medium text-gray-900">24m</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="p-5">
-                <div className="flex items-center">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 bg-red-500 rounded-md flex items-center justify-center">
-                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                  <div className="ml-5 w-0 flex-1">
-                    <dl>
-                      <dt className="text-sm font-medium text-gray-500 truncate">Performance</dt>
-                      <dd className="text-lg font-medium text-gray-900">98%</dd>
-                    </dl>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Additional Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  Recent Activity
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <p className="text-sm text-gray-600">User login from 192.168.1.1</p>
-                    <span className="text-xs text-gray-400">2 min ago</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                    <p className="text-sm text-gray-600">New user registration</p>
-                    <span className="text-xs text-gray-400">5 min ago</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                    <p className="text-sm text-gray-600">Password reset request</p>
-                    <span className="text-xs text-gray-400">12 min ago</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white overflow-hidden shadow rounded-lg">
-              <div className="px-4 py-5 sm:p-6">
-                <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-                  Quick Actions
-                </h3>
-                <div className="space-y-3">
-                  <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors">
-                    <span className="text-sm font-medium text-gray-900">Manage Users</span>
-                  </button>
-                  <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors">
-                    <span className="text-sm font-medium text-gray-900">View Reports</span>
-                  </button>
-                  <button className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-md transition-colors">
-                    <span className="text-sm font-medium text-gray-900">Settings</span>
-                  </button>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
