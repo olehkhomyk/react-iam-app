@@ -1,5 +1,7 @@
 import { http } from "./http";
 import {authTokens} from "./authTokens.ts";
+import type { AuthResponse } from "./types";
+
 
 export interface LoginRequest {
     email: string;
@@ -9,33 +11,22 @@ export interface LoginRequest {
 export interface RegisterRequest {
     email: string;
     password: string;
-    name?: string;
+    username?: string;
 }
-
-export interface AuthResponse {
-    accessToken: string;
-    refreshToken: string;
-    user?: {
-        id: string;
-        email: string;
-        name?: string;
-    };
-}
-
 /**
  * Login user with email and password
  */
-export async function login(credentials: LoginRequest): Promise<AuthResponse> {
+export async function login(credentials: LoginRequest): Promise<AuthResponse['payload']> {
     const response = await http.post<AuthResponse>("/auth/login", credentials);
-    return response.data;
+    return response.data.payload;
 }
 
 /**
  * Register new user
  */
-export async function register(userData: RegisterRequest): Promise<AuthResponse> {
+export async function register(userData: RegisterRequest): Promise<AuthResponse['payload']> {
     const response = await http.post<AuthResponse>("/auth/register", userData);
-    return response.data;
+    return response.data.payload;
 }
 
 /**
