@@ -2,9 +2,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "sonner";
 
 const loginSchema = z.object({
-  login: z.string().min(1, "Login is required"),
+  email: z.email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   remember: z.boolean().optional(),
 });
@@ -33,13 +34,14 @@ export default function Login() {
       
       // TODO: Replace with actual authentication logic
       console.log('Login attempt:', data);
+      toast.error("Error occured!");
       
       // Navigate to dashboard on successful login
-      navigate('/dashboard');
+      // navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       // Example: server says "invalid credentials"
-      setError("login", { message: "Invalid login or password" });
+      setError("email", { message: "Invalid login or password" });
     }
   };
 
@@ -65,26 +67,26 @@ export default function Login() {
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="bg-white shadow-sm rounded-lg p-6 space-y-4">
-            <div>
+            <div className="text-gray-800">
               <label htmlFor="login" className="block text-sm font-medium text-gray-700 mb-1">
-                Login
+                Email
               </label>
               <input
                 id="login"
                 type="text"
                 autoComplete="username"
-                {...register("login")}
-                className={`block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
-                  errors.login ? 'border-red-300' : 'border-gray-300'
+                {...register("email")}
+                className={`block w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400  focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+                  errors.email ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Enter your login"
               />
-              {errors.login && (
-                <p className="mt-1 text-sm text-red-600">{errors.login.message}</p>
+              {errors.email && (
+                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
               )}
             </div>
 
-            <div>
+            <div className="text-gray-800">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
