@@ -15,10 +15,13 @@ export interface UserProfile {
     username: string;
     email: string;
     registrationStatus: RegistrationStatus;
-    lastLogin?: string; // LocalDateTime from backend will be string in JSON
-    refreshToken?: string;
-    token?: string;
+    lastLogin?: string;
     roles: Role[];
+}
+
+export interface TokenResponse {
+    token: string;
+    refreshToken: string;
 }
 
 export interface ApiResponse<T> {
@@ -27,4 +30,5 @@ export interface ApiResponse<T> {
     success: boolean;
 }
 
-export type AuthResponse = ApiResponse<UserProfile>;
+export type AuthResponse = ApiResponse<TokenResponse>;
+export type UserResponse = ApiResponse<UserProfile>;
