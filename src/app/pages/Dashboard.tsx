@@ -1,10 +1,12 @@
 import { useNavigate } from 'react-router-dom';
+ import { useAuth } from "../core/auth/useAuth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const handleLogout = () => {
-    // TODO: Add actual logout logic (clear tokens, etc.)
+    logout();
     navigate('/login');
   };
 
@@ -17,6 +19,11 @@ export default function Dashboard() {
             <div className="flex items-center">
               <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
             </div>
+            {user && (
+              <div className="text-sm text-gray-700 mr-4">
+                {user.username}
+              </div>
+            )}
             <button
               onClick={handleLogout}
               className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"

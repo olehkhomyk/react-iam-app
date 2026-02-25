@@ -3,6 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
+ import { useAuth } from "../core/auth/useAuth";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
@@ -14,6 +15,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -29,15 +31,9 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Replace with actual authentication logic
-      console.log('Login attempt:', data);
-      toast.error("Error occured!");
-      
-      // Navigate to dashboard on successful login
-      // navigate('/dashboard');
+      await login(data.email, data.password);
+      toast.success("Login successful!");
+      navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       // Example: server says "invalid credentials"

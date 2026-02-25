@@ -27,11 +27,4 @@ export interface ApiResponse<T> {
     success: boolean;
 }
 
-export interface AuthResponse {
-    message: string;
-    payload: {
-        accessToken: string;
-        refreshToken: string;
-    } & UserProfile;
-    success: boolean;
-}
+export type AuthResponse = ApiResponse<UserProfile>;
