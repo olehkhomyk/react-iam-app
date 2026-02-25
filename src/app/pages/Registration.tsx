@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, Link } from "react-router-dom";
+ import { toast } from "sonner";
+ import { useAuth } from "../core/auth/useAuth";
 
 const registrationSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -19,6 +21,7 @@ type RegistrationFormData = z.infer<typeof registrationSchema>;
 
 export default function Registration() {
   const navigate = useNavigate();
+  const { register: authRegister } = useAuth();
   const {
     register,
     handleSubmit,
@@ -34,14 +37,9 @@ export default function Registration() {
 
   const onSubmit = async (data: RegistrationFormData) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // TODO: Replace with actual registration logic
-      console.log('Registration attempt:', data);
-      
-      // Navigate to login on successful registration
-      navigate('/login');
+      await authRegister(data.email, data.password, data.login);
+      toast.success("Registration successful!");
+      navigate('/dashboard');
     } catch (error) {
       console.error('Registration failed:', error);
       // Example: server says "email already exists"
