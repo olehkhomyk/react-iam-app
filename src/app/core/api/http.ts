@@ -1,5 +1,7 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { authTokens } from "./authTokens";
+import { queryClient } from "./queryClient";
+import { AUTH_QUERY_KEY } from "../auth/auth.queries";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL as string;
 const SKIP_REFRESH_URLS = ['/auth/login', '/auth/refresh', '/auth/register'];
@@ -37,10 +39,14 @@ async function refreshAccessToken(): Promise<string> {
     if (!refreshToken) throw new Error("No refresh token");
 
     const plain = axios.create({ baseURL: API_BASE_URL });
-    const res = await plain.post("/auth/refresh", { refreshToken });
+    const res = await plain.get("/auth/refresh/token", { params: { token: refreshToken } });
 
-    authTokens.set(res.data);
-    return res.data.accessToken as string;
+    const tokens = res.data.payload || res.data;
+    authTokens.set({ 
+        accessToken: tokens.token,
+        refreshToken: tokens.refreshToken 
+    });
+    return tokens.token;
 }
 
 // --- Response interceptor: якщо 401 -> refresh -> retry ---
@@ -71,6 +77,8 @@ http.interceptors.response.use(
             return http.request(originalConfig);
         } catch (refreshErr) {
             authTokens.clear();
+            queryClient.setQueryData(AUTH_QUERY_KEY, null);
+            queryClient.removeQueries({ queryKey: AUTH_QUERY_KEY });
             return Promise.reject(refreshErr);
         }
     }
