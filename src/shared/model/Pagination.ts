@@ -1,19 +1,11 @@
-export interface PaginationData<T> {
+export type PaginationResponse<T> = {
     content: T[];
-    pagination: {
-        total: number;
-        limit: number;
-        page: number;
-        pages: number;
-    };
-}
-
-export type PaginatedResponse<T> = {
-    content: T[];
-    pagination: {
-        total: number;
-        limit: number;
-        page: number;
-        pages: number;
-    };
+    pagination: Pagination;
 };
+
+export interface Pagination {
+    total: number;
+    limit: number;
+    page: number;
+    pages: number;
+}

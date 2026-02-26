@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../../features/auth/context/useAuth.ts";
 import { useEffect, useState } from 'react';
 import { http } from '../../app/api/http.ts';
-import type {Pagination, Post, PostsPayload} from "../types";
-import type {ApiResponse} from "../../features/auth/model/Auth.ts";
+import type { ApiResponse } from "../../features/auth/model/Auth.ts";
+import type { Post } from "../../features/posts/model/Post.ts";
+import type { Pagination, PaginationResponse } from "../../shared/model/Pagination.ts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ export default function Dashboard() {
   const fetchPosts = async (page: number = 1, limit: number = 5, signal?: AbortSignal) => {
     try {
       setLoading(true);
-      const response = await http.get<ApiResponse<PostsPayload>>(`/posts/all?page=${page - 1}&limit=${limit}`, { signal });
+      const response = await http.get<ApiResponse<PaginationResponse<Post>>>(`/posts/all?page=${page - 1}&limit=${limit}`, { signal });
       setPosts(response.data.payload.content);
       setPagination(response.data.payload.pagination);
     } catch (err: any) {
