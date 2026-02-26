@@ -8,15 +8,3 @@ export interface Post {
     isDeleted: boolean;
     createdBy: string;
 }
-
-export interface PostsPayload {
-    content: Post[];
-    pagination: Pagination;
-}
-
-export interface Pagination {
-    total: number;
-    limit: number;
-    page: number;
-    pages: number;
-}
