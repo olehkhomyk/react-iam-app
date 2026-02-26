@@ -35,6 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		[user, isAuthenticated, login, register, logout]
 	);
 
+	// TODO: FIX ON REFRESH TOKEN IT SHOWS SPINNER
 	if (isInitializing) {
 		return <GlobalSpinner/>;
 	}
