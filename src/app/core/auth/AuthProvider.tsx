@@ -5,7 +5,7 @@ import { GlobalSpinner } from "../components";
 import { useUserQuery, useLoginMutation, useRegisterMutation, useLogoutMutation } from "./auth.queries";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-	const { data: user, isLoading: isInitializing } = useUserQuery();
+	const { data: user, isLoading: isUserLoading } = useUserQuery();
 	const loginMutation = useLoginMutation();
 	const registerMutation = useRegisterMutation();
 	const logoutMutation = useLogoutMutation();
@@ -35,7 +35,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		[user, isAuthenticated, login, register, logout]
 	);
 
-	// TODO: FIX ON REFRESH TOKEN IT SHOWS SPINNER
+	const isInitializing = isUserLoading && !user;
+
 	if (isInitializing) {
 		return <GlobalSpinner/>;
 	}
