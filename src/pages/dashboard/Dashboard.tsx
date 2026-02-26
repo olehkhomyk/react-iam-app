@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from "../core/auth/useAuth";
+import { useAuth } from "../../features/auth/context/useAuth.ts";
 import { useEffect, useState } from 'react';
-import { http } from '../core/api/http';
-import type {Pagination, Post, PostsPayload} from "../models";
-import type {ApiResponse} from "../core/api/types.ts";
+import { http } from '../../app/api/http.ts';
+import type {Pagination, Post, PostsPayload} from "../types";
+import type {ApiResponse} from "../../features/auth/model/Auth.ts";
 
 export default function Dashboard() {
   const navigate = useNavigate();

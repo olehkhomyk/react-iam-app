@@ -1,8 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import RequireAuth from "./core/auth/RequireAuth.tsx";
-import Registration from "./pages/Registration.tsx";
+import Login from "../../pages/login/Login.tsx";
+import Dashboard from "../../pages/dashboard/Dashboard.tsx";
+import RequireAuth from "./RequireAuth.tsx";
+import Registration from "../../pages/registration/Registration.tsx";
 
 export const router = createBrowserRouter([
 	{ path: "/login", element: <Login /> },

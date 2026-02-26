@@ -1,5 +1,5 @@
 import { createContext } from "react";
-import type { UserProfile } from "../api/types";
+import type { UserProfile } from "../model/Auth.ts";
 
 export type AuthUser = UserProfile;
 
