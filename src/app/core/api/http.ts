@@ -21,9 +21,6 @@ http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     return config;
 });
 
-let isRefreshing = false;
-let refreshPromise: Promise<string> | null = null;
-
 function isAuthError(error: AxiosError) {
     const status = error.response?.status;
     return status === 401;
@@ -48,6 +45,10 @@ async function refreshAccessToken(): Promise<string> {
     });
     return tokens.token;
 }
+
+
+let isRefreshing = false;
+let refreshPromise: Promise<string> | null = null;
 
 // --- Response interceptor: якщо 401 -> refresh -> retry ---
 http.interceptors.response.use(
