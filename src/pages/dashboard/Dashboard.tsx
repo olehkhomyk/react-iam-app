@@ -1,46 +1,36 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../../features/auth/context/useAuth.ts";
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { http } from '../../app/api/http.ts';
+import { queryClient } from '../../app/api/queryClient.ts';
 import type { ApiResponse } from "../../features/auth/model/Auth.ts";
 import type { Post } from "../../features/posts/model/Post.ts";
-import type { Pagination, PaginationResponse } from "../../shared/model/Pagination.ts";
+import type { PaginationResponse } from "../../shared/model/Pagination.ts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [pagination, setPagination] = useState<Pagination | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  const [page, setPage] = useState(1);
+  const limit = 5;
+
+  const { data, isLoading: loading, error } = useQuery({
+    queryKey: ['posts', page, limit],
+    queryFn: async () => {
+      const response = await http.get<ApiResponse<PaginationResponse<Post>>>(
+        `/posts/all?page=${page - 1}&limit=${limit}`
+      );
+      return response.data.payload;
+    }
+  });
+
+  const posts = data?.content ?? [];
+  const pagination = data?.pagination ?? null;
 
   const refreshPosts = () => {
-    fetchPosts();
-  }
-
-  const fetchPosts = async (page: number = 1, limit: number = 5, signal?: AbortSignal) => {
-    try {
-      setLoading(true);
-      const response = await http.get<ApiResponse<PaginationResponse<Post>>>(`/posts/all?page=${page - 1}&limit=${limit}`, { signal });
-      setPosts(response.data.payload.content);
-      setPagination(response.data.payload.pagination);
-    } catch (err: any) {
-      if (err.name === 'CanceledError') return;
-      setError('Failed to fetch posts');
-      console.error('Error fetching posts:', err);
-    } finally {
-      setLoading(false);
-    }
+    queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
-
-  useEffect(() => {
-    const abortController = new AbortController();
-    fetchPosts(1, 5, abortController.signal);
-    
-    return () => {
-      abortController.abort();
-    };
-  }, []);
 
   const handleLogout = () => {
     logout();
@@ -93,7 +83,7 @@ export default function Dashboard() {
               <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                 Recent Posts
               </h2>
-              
+
               {loading ? (
                 <div className="text-center py-8">
                   <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
@@ -101,11 +91,11 @@ export default function Dashboard() {
                 </div>
               ) : error ? (
                 <div className="text-center py-8">
-                  <p className="text-red-500">{error}</p>
+                  <p className="text-red-500">{error instanceof Error ? error.message : 'Failed to fetch posts'}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {posts.map((post) => (
+                  {posts.map((post: Post) => (
                     <div key={post.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-base font-semibold text-gray-900">{post.title}</h3>
@@ -125,11 +115,11 @@ export default function Dashboard() {
                       </div>
                     </div>
                   ))}
-                  
+
                   {pagination && pagination.pages > 1 && (
                     <div className="flex justify-center mt-6 space-x-2">
                       <button
-                        onClick={() => fetchPosts(pagination.page - 1)}
+                        onClick={() => setPage(pagination.page - 1)}
                         disabled={pagination.page <= 1}
                         className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -139,7 +129,7 @@ export default function Dashboard() {
                         Page {pagination.page} of {pagination.pages}
                       </span>
                       <button
-                        onClick={() => fetchPosts(pagination.page + 1)}
+                        onClick={() => setPage(pagination.page + 1)}
                         disabled={pagination.page >= pagination.pages}
                         className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
