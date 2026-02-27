@@ -1,32 +1,39 @@
 import {useState} from 'react';
 import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar';
 import {Button} from '@/components/ui/button';
-import {Heart, MessageCircle, Share2, MoreVertical, Edit} from 'lucide-react';
+import {Heart, MessageCircle, Share2, MoreVertical} from 'lucide-react';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
+	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type {Post} from '@/features/posts/model/Post';
 import {getInitials, formatDate} from './utils';
 import {ImageZoom} from '@/shared/ui/image-zoom/ImageZoom';
+import type {PostAction} from './types';
 
 interface FullPostCardProps {
 	post: Post;
 	onLike?: (postId: number) => void;
 	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
-	onEdit?: (post: Post) => void;
+	actions?: PostAction[];
 }
 
-export function FullPostCard({post, onLike, onComment, onShare, onEdit}: FullPostCardProps) {
+export function FullPostCard({post, onLike, onComment, onShare, actions = []}: FullPostCardProps) {
 	const [isLiked, setIsLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(post.likes);
 	const [isExpanded, setIsExpanded] = useState(false);
 
 	const CONTENT_PREVIEW_LENGTH = 200;
 	const shouldShowReadMore = post.content.length > CONTENT_PREVIEW_LENGTH;
+
+	// Filter actions based on show condition
+	const visibleActions = actions.filter(action =>
+		action.show === undefined || action.show(post)
+	);
 
 	const handleLike = () => {
 		setIsLiked(!isLiked);
@@ -69,26 +76,39 @@ export function FullPostCard({post, onLike, onComment, onShare, onEdit}: FullPos
 								<p className="text-xs text-gray-500">{formatDate(post.created)}</p>
 							</div>
 						</div>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant="ghost"
-									size="sm"
-									className="text-gray-400 hover:text-gray-600 h-8 w-8 p-0"
-								>
-									<MoreVertical className="w-4 h-4"/>
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end" className="w-48">
-								<DropdownMenuItem
-									onClick={() => onEdit?.(post)}
-									className="cursor-pointer"
-								>
-									<Edit className="w-4 h-4 mr-2"/>
-									Edit Post
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						{visibleActions.length > 0 && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										variant="ghost"
+										size="sm"
+										className="text-gray-400 hover:text-gray-600 h-8 w-8 p-0"
+									>
+										<MoreVertical className="w-4 h-4"/>
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align="end" className="w-48">
+									{visibleActions.map((action, index) => (
+										<div key={action.id}>
+											{index > 0 && action.variant === 'destructive' && visibleActions[index - 1]?.variant !== 'destructive' && (
+												<DropdownMenuSeparator/>
+											)}
+											<DropdownMenuItem
+												onClick={() => action.onClick(post)}
+												className={`cursor-pointer ${
+													action.variant === 'destructive'
+														? 'text-red-600 focus:text-red-600 focus:bg-red-50'
+														: ''
+												}`}
+											>
+												<action.icon className="w-4 h-4 mr-2"/>
+												{action.label}
+											</DropdownMenuItem>
+										</div>
+									))}
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
 					</div>
 
 					{/* Title and Content */}

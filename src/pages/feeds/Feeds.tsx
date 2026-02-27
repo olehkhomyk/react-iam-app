@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { http } from '@/app/api/http.ts';
 import { queryClient } from '@/app/api/queryClient.ts';
@@ -11,10 +11,13 @@ import { DynamicPagination } from "@/shared/ui/dynamic-pagination/DynamicPaginat
 import { UpdatePostDialog } from "@/features/posts/ui/UpdatePostDialog.tsx";
 import { PostSearchForm } from "@/features/posts/ui/PostSearchForm.tsx";
 import type { PostSearchRequest, PostSearchFormValues } from "@/features/posts/model/PostSearch.ts";
+import { PostActions } from "@/shared/ui/post-card/post-actions.tsx";
 import { toast } from "sonner";
+import {useAuth} from "@/features/auth/context/useAuth.ts";
 
 export default function Feeds() {
   const navigate = useNavigate();
+  const { user} = useAuth();
 
   const [page, setPage] = useState(1);
   const limit = 5;
@@ -70,6 +73,18 @@ export default function Feeds() {
     setIsEditDialogOpen(true);
   };
 
+  const handleDelete = (post: Post) => {
+    // TODO: Implement delete functionality
+    console.log('Delete post:', post.id);
+    toast.info('Delete functionality coming soon');
+  };
+
+  const handleReport = (post: Post) => {
+    // TODO: Implement report functionality
+    console.log('Report post:', post.id);
+    toast.info('Report functionality coming soon');
+  };
+
   const handleUpdate = async (postId: number, values: { title: string; content: string }) => {
     await updatePostMutation.mutateAsync({ postId, values });
   };
@@ -82,6 +97,19 @@ export default function Feeds() {
     setSearchParams(searchRequest);
     setPage(1); // Reset to first page on new search
   };
+
+  // Configure post actions with permissions
+  const postActions = useMemo(() => [
+    PostActions.edit(
+      handleEdit,
+      (post: Post) => post.createdBy === user?.username
+    ),
+    PostActions.delete(
+      handleDelete,
+      (post: Post) => post.createdBy === user?.username
+    ),
+    PostActions.report(handleReport),
+  ], [handleEdit, handleDelete, handleReport, user]);
 
   return (
     <div className="min-h-screen">
@@ -117,7 +145,7 @@ export default function Feeds() {
                           onLike={handleLike}
                           onComment={handleComment}
                           onShare={handleShare}
-                          onEdit={handleEdit}
+                          actions={postActions}
                         />
                       </div>
                     ))}

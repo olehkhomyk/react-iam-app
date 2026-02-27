@@ -1,5 +1,5 @@
 import type { Post } from '@/features/posts/model/Post';
-import { CompactPostCard } from './compact-post-card';
+import type { PostAction } from './types';
 import { FullPostCard } from './full-post-card';
 
 interface PostCardProps {
@@ -7,7 +7,7 @@ interface PostCardProps {
   onLike?: (postId: number) => void;
   onComment?: (postId: number) => void;
   onShare?: (postId: number) => void;
-  onEdit?: (post: Post) => void;
+  actions?: PostAction[];
   showActions?: boolean;
   variant?: 'default' | 'compact';
 }
@@ -17,26 +17,15 @@ export function PostCard({
   onLike, 
   onComment, 
   onShare,
-  onEdit,
-  variant = 'default'
+  actions
 }: PostCardProps) {
-  if (variant === 'compact') {
-    return (
-      <CompactPostCard
-        post={post}
-        onLike={onLike}
-        onComment={onComment}
-      />
-    );
-  }
-
   return (
     <FullPostCard
       post={post}
       onLike={onLike}
       onComment={onComment}
       onShare={onShare}
-      onEdit={onEdit}
+      actions={actions}
     />
   );
 }
