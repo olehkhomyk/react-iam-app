@@ -83,6 +83,7 @@ export function UpdatePostForm({
                       placeholder="Enter a compelling title..."
                       className="text-base"
                       disabled={isLoading}
+                      autoFocus={false}
                       {...field}
                     />
                   </FormControl>
