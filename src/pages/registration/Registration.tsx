@@ -50,7 +50,7 @@ export default function Registration() {
 				confirmPassword: data.confirmPassword,
 			});
 			toast.success("Registration successful!");
-			navigate('/dashboard');
+			navigate('/feeds');
 		} catch (err: any) {
 				console.error(err);
 		}

@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../../pages/login/Login.tsx";
-import Dashboard from "../../pages/dashboard/Dashboard.tsx";
+import Feeds from "@/pages/feeds/Feeds.tsx";
 import RequireAuth from "./RequireAuth.tsx";
 import Registration from "../../pages/registration/Registration.tsx";
 import { AppLayout } from "@/app/layout/AppLayout.tsx";
@@ -15,15 +15,15 @@ export const router = createBrowserRouter([
         path: "/",
         element: (
           <RequireAuth>
-            <Dashboard />
+            <Feeds />
           </RequireAuth>
         ),
       },
       {
-        path: "/dashboard",
+        path: "/feeds",
         element: (
           <RequireAuth>
-            <Dashboard />
+            <Feeds />
           </RequireAuth>
         ),
       },

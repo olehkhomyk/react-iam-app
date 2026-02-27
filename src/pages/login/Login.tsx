@@ -37,7 +37,7 @@ export default function Login() {
     try {
       await login({ email: data.email, password: data.password });
       toast.success("Login successful!");
-      navigate('/dashboard');
+      navigate('/feeds');
     } catch (error) {
       console.error('Login failed:', error);
       // Example: server says "invalid credentials"

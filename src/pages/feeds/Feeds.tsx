@@ -2,17 +2,20 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { http } from '@/app/api/http.ts';
-import { queryClient } from '@/app/api/queryClient.ts';
 import type { ApiResponse } from "@/features/auth/model/Auth.ts";
 import type { Post } from "@/features/posts/model/Post.ts";
 import type { PaginationResponse } from "@/shared/model/Pagination.ts";
 import { PostCard } from "@/shared/ui/post-card/post-card.tsx";
+import { DynamicPagination } from "@/shared/ui/dynamic-pagination/DynamicPagination.tsx";
+import { UpdatePostDialog } from "@/features/posts/ui/UpdatePostDialog.tsx";
 
-export default function Dashboard() {
+export default function Feeds() {
   const navigate = useNavigate();
 
   const [page, setPage] = useState(1);
   const limit = 5;
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const { data, isLoading: loading, error } = useQuery({
     queryKey: ['posts', page, limit],
@@ -27,10 +30,6 @@ export default function Dashboard() {
   const posts = data?.content ?? [];
   const pagination = data?.pagination ?? null;
 
-  const refreshPosts = () => {
-    queryClient.invalidateQueries({ queryKey: ['posts'] });
-  };
-
   const handleLike = (postId: number) => {
     console.log('Liked post:', postId);
     // TODO: Implement like functionality
@@ -44,6 +43,17 @@ export default function Dashboard() {
   const handleShare = (postId: number) => {
     console.log('Share post:', postId);
     // TODO: Implement share functionality
+  };
+
+  const handleEdit = (post: Post) => {
+    setEditingPost(post);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleUpdate = async (postId: number, values: { title: string; content: string }) => {
+    console.log('Update post:', postId, values);
+    // TODO: Implement update functionality with API call
+    // For now, just log the values
   };
 
   return (
@@ -68,46 +78,43 @@ export default function Dashboard() {
                   <p className="text-red-500">{error instanceof Error ? error.message : 'Failed to fetch posts'}</p>
                 </div>
               ) : (
-                <div className="space-y-6 grid lg:grid-cols-3 gap-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1">
-                  {posts.map((post: Post) => (
-                    <div className="">
-                      <PostCard
-                        key={post.id}
-                        post={post}
-                        onLike={handleLike}
-                        onComment={handleComment}
-                        onShare={handleShare}
-                      />
-                    </div>
-                  ))}
-
-                  {pagination && pagination.pages > 1 && (
-                    <div className="flex justify-center mt-6 space-x-2">
-                      <button
-                        onClick={() => setPage(pagination.page - 1)}
-                        disabled={pagination.page <= 1}
-                        className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Previous
-                      </button>
-                      <span className="px-3 py-2 text-sm text-gray-600">
-                        Page {pagination.page} of {pagination.pages}
-                      </span>
-                      <button
-                        onClick={() => setPage(pagination.page + 1)}
-                        disabled={pagination.page >= pagination.pages}
-                        className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Next
-                      </button>
-                    </div>
+                <>
+                  <div className="space-y-6 grid grid-cols-1">
+                    {posts.map((post: Post) => (
+                      <div key={post.id}>
+                        <PostCard
+                          post={post}
+                          onLike={handleLike}
+                          onComment={handleComment}
+                          onShare={handleShare}
+                          onEdit={handleEdit}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {pagination && (
+                    <DynamicPagination
+                      currentPage={pagination.page}
+                      totalPages={pagination.pages}
+                      onPageChange={setPage}
+                    />
                   )}
-                </div>
+                </>
               )}
             </div>
           </div>
         </div>
       </main>
+
+      {editingPost && (
+        <UpdatePostDialog
+          post={editingPost}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onUpdate={handleUpdate}
+        />
+      )}
     </div>
   );
 }
