@@ -67,9 +67,10 @@ function UserMenu() {
 			<DropdownMenuTrigger asChild>
 				<button
 					type="button"
-					className="h-9 w-9 rounded-full bg-transparent hover:bg-accent focus:bg-accent data-[state=open]:bg-accent/60 inline-flex items-center justify-center"
+					className="flex items-center gap-2 rounded-full bg-transparent hover:bg-accent focus:bg-accent data-[state=open]:bg-accent/60 px-2 py-1"
 					aria-label="User menu"
 				>
+					<span className="text-sm font-medium text-foreground hidden sm:inline">{label}</span>
 					<Avatar size="sm">
 						<AvatarImage alt={label}/>
 						<AvatarFallback>{initials || "U"}</AvatarFallback>
