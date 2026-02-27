@@ -33,6 +33,14 @@ function extractMessageFromApiData(data: ApiErrorBody | string | undefined): str
 	if (typeof data !== "object") return undefined;
 
 	const d = data as any;
+	
+	// Handle validation errors with details array
+	if (d.payload?.details && Array.isArray(d.payload.details) && d.payload.details.length > 0) {
+		const details = d.payload.details.join(", ");
+		const message = pickString(d.payload?.message) || pickString(d.message);
+		return message ? `${message}: ${details}` : details;
+	}
+	
 	return (
 		pickString(d.error) ||
 		pickString(d.message) ||
