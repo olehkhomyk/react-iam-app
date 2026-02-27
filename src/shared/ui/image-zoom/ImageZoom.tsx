@@ -5,6 +5,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 
@@ -56,6 +57,8 @@ export function ImageZoom({
       )}
 
       <DialogContent className="!w-[80vw] !h-[80vh] !max-w-[80vw] p-0 border-0 bg-black/90" showCloseButton={false}>
+        <DialogTitle className="sr-only">Image preview</DialogTitle>
+        
         <DialogClose asChild>
           <button className="absolute top-4 right-4 z-50 text-white/90 hover:text-white transition-colors">
             <X className="h-6 w-6" />
