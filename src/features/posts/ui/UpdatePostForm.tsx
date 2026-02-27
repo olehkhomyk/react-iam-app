@@ -32,7 +32,7 @@ const postFormSchema = z.object({
   content: z
     .string()
     .min(10, { message: "Content must be at least 10 characters." })
-    .max(5000, { message: "Content must not exceed 5000 characters." }),
+    .max(1000, { message: "Content must not exceed 1000 characters." }),
 });
 
 type PostFormValues = z.infer<typeof postFormSchema>;
@@ -98,25 +98,46 @@ export function UpdatePostForm({
             <FormField
               control={form.control}
               name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="text-base font-semibold">
-                    Post Content
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Share your thoughts, ideas, or story..."
-                      className="min-h-[200px] text-base resize-none"
-                      disabled={isLoading}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Write your post content here (10-5000 characters).
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) => {
+                const currentLength = field.value?.length || 0;
+                const maxLength = 1000;
+                const isNearLimit = currentLength > maxLength * 0.8;
+                const isOverLimit = currentLength > maxLength;
+
+                return (
+                  <FormItem>
+                    <FormLabel className="text-base font-semibold">
+                      Post Content
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Share your thoughts, ideas, or story..."
+                        className="min-h-[200px] text-base resize-none"
+                        disabled={isLoading}
+                        maxLength={maxLength}
+                        {...field}
+                      />
+                    </FormControl>
+                    <div className="flex items-center justify-between">
+                      <FormDescription>
+                        Write your post content here (10-1000 characters).
+                      </FormDescription>
+                      <span
+                        className={`text-sm font-medium ${
+                          isOverLimit
+                            ? "text-red-600"
+                            : isNearLimit
+                            ? "text-orange-600"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {currentLength} / {maxLength}
+                      </span>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
 
             {post && (
