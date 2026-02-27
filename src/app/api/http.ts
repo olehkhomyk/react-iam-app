@@ -1,6 +1,6 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { authTokens } from "../../shared/lib/authTokens.ts";
-import { authEventEmitter, AUTH_EVENTS } from '../../shared/lib/authEventEmitter.ts';
+import { authTokens } from "@/shared/lib/authTokens.ts";
+import { authEventEmitter, AUTH_EVENTS } from '@/shared/lib/authEventEmitter.ts';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL as string;
 const SKIP_REFRESH_URLS = ['/auth/login', '/auth/refresh', '/auth/register'];

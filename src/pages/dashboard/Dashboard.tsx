@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from "../../features/auth/context/useAuth.ts";
+import { useAuth } from "@/features/auth/context/useAuth.ts";
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { http } from '../../app/api/http.ts';
-import { queryClient } from '../../app/api/queryClient.ts';
-import type { ApiResponse } from "../../features/auth/model/Auth.ts";
-import type { Post } from "../../features/posts/model/Post.ts";
-import type { PaginationResponse } from "../../shared/model/Pagination.ts";
+import { http } from '@/app/api/http.ts';
+import { queryClient } from '@/app/api/queryClient.ts';
+import type { ApiResponse } from "@/features/auth/model/Auth.ts";
+import type { Post } from "@/features/posts/model/Post.ts";
+import type { PaginationResponse } from "@/shared/model/Pagination.ts";
 
 export default function Dashboard() {
   const navigate = useNavigate();
