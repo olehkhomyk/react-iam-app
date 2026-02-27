@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,7 @@ export function UpdatePostDialog({
   onUpdate,
 }: UpdatePostDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [formRef, setFormRef] = useState<HTMLFormElement | null>(null);
+  const formRef = useRef<HTMLFormElement | null>(null);
 
   const handleSubmit = async (values: { title: string; content: string }) => {
     try {
@@ -55,6 +55,7 @@ export function UpdatePostDialog({
             onSubmit={handleSubmit}
             isLoading={isLoading}
             renderInDialog={true}
+            formRef={formRef}
           />
         </div>
 
@@ -70,12 +71,9 @@ export function UpdatePostDialog({
             Cancel
           </Button>
           <Button
-            type="submit"
+            type="button"
             disabled={isLoading}
-            onClick={() => {
-              const form = document.querySelector('form');
-              form?.requestSubmit();
-            }}
+            onClick={() => formRef.current?.requestSubmit()}
           >
             {isLoading ? (
               <>

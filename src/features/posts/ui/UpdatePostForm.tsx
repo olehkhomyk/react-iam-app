@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -42,6 +43,7 @@ interface UpdatePostFormProps {
   onCancel?: () => void;
   isLoading?: boolean;
   renderInDialog?: boolean;
+  formRef?: RefObject<HTMLFormElement | null>;
 }
 
 export function UpdatePostForm({
@@ -50,6 +52,7 @@ export function UpdatePostForm({
   onCancel,
   isLoading = false,
   renderInDialog = false,
+  formRef,
 }: UpdatePostFormProps) {
   const form = useForm<PostFormValues>({
     resolver: zodResolver(postFormSchema),
@@ -65,7 +68,7 @@ export function UpdatePostForm({
 
   const formContent = (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full">
+      <form ref={formRef} onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col h-full">
         <div className="flex-1 space-y-6">
             <FormField
               control={form.control}
