@@ -9,7 +9,9 @@ import type { PaginationResponse } from "@/shared/model/Pagination.ts";
 import { PostCard } from "@/shared/ui/post-card/post-card.tsx";
 import { DynamicPagination } from "@/shared/ui/dynamic-pagination/DynamicPagination.tsx";
 import { UpdatePostDialog } from "@/features/posts/ui/UpdatePostDialog.tsx";
-import {toast} from "sonner";
+import { PostSearchForm } from "@/features/posts/ui/PostSearchForm.tsx";
+import type { PostSearchRequest, PostSearchFormValues } from "@/features/posts/model/PostSearch.ts";
+import { toast } from "sonner";
 
 export default function Feeds() {
   const navigate = useNavigate();
@@ -18,12 +20,14 @@ export default function Feeds() {
   const limit = 5;
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [searchParams, setSearchParams] = useState<PostSearchRequest>({});
 
   const { data, isLoading: loading, error } = useQuery({
-    queryKey: ['posts', page, limit],
+    queryKey: ['posts', page, limit, searchParams],
     queryFn: async () => {
-      const response = await http.get<ApiResponse<PaginationResponse<Post>>>(
-        `/posts/all?page=${page - 1}&limit=${limit}`
+      const response = await http.post<ApiResponse<PaginationResponse<Post>>>(
+        `/posts/search?page=${page - 1}&limit=${limit}`,
+        searchParams
       );
       return response.data.payload;
     }
@@ -70,11 +74,23 @@ export default function Feeds() {
     await updatePostMutation.mutateAsync({ postId, values });
   };
 
+  const handleSearch = (values: PostSearchFormValues) => {
+    const searchRequest: PostSearchRequest = {
+      keyword: values.keyword || undefined,
+      sortField: values.sortField || undefined,
+    };
+    setSearchParams(searchRequest);
+    setPage(1); // Reset to first page on new search
+  };
+
   return (
     <div className="min-h-screen">
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
+        <div className="px-4 py-6 sm:px-0 space-y-6">
+          {/* Search Form */}
+          <PostSearchForm onSearch={handleSearch} isLoading={loading} />
+
           {/* Posts Section */}
           <div className="bg-white overflow-hidden shadow rounded-lg">
             <div className="px-4 py-5 sm:p-6">
