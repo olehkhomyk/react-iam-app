@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { authTokens } from "../../../shared/lib/authTokens.ts";
+import { authTokens } from "@/shared/lib/authTokens.ts";
 import { AuthContext } from "../context/AuthContext.ts";
-import { GlobalSpinner } from "../../../shared/ui/GlobalSpinner.tsx";
 import {
 	useUserQuery, useLoginMutation, useRegisterMutation, useLogoutMutation, AUTH_QUERY_KEY
 } from "../store/auth.queries.ts";
-import { queryClient } from "../../../app/api/queryClient.ts";
-import { AUTH_EVENTS, authEventEmitter } from "../../../shared/lib/authEventEmitter.ts";
+import { queryClient } from "@/app/api/queryClient.ts";
+import { AUTH_EVENTS, authEventEmitter } from "@/shared/lib/authEventEmitter.ts";
+import { Spinner } from "@/components/ui/spinner.tsx";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const { data: user, isLoading: isUserLoading } = useUserQuery();
@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const isInitializing = isUserLoading && !user;
 
 	if (isInitializing) {
-		return <GlobalSpinner/>;
+		return <Spinner className="size-8"/>;
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

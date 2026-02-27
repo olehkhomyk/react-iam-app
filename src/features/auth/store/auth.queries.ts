@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser, login as apiLogin, register as apiRegister } from "../api/auth.api.ts";
-import { authTokens } from "../../../shared/lib/authTokens.ts";
+import { authTokens } from "@/shared/lib/authTokens.ts";
 import type { LoginRequest, RegisterRequest } from "../api/auth.api.ts";
 
 export const AUTH_QUERY_KEY = ["auth", "me"] as const;

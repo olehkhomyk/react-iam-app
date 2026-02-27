@@ -3,7 +3,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
- import { useAuth } from "../../features/auth/context/useAuth.ts";
+ import { useAuth } from "@/features/auth/context/useAuth.ts";
 
 const loginSchema = z.object({
   email: z.email("Please enter a valid email address"),
