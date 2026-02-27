@@ -1,18 +1,8 @@
 import { http } from "@/app/api/http.ts";
-import {authTokens} from "@/shared/lib/authTokens.ts";
+import { authTokens } from "@/shared/lib/authTokens.ts";
 import type { AuthResponse, UserResponse, TokenResponse, UserProfile } from "../model/Auth.ts";
+import type { LoginRequest, RegisterRequest } from "@/features/auth/model/AuthRequest.ts";
 
-
-export interface LoginRequest {
-    email: string;
-    password: string;
-}
-
-export interface RegisterRequest {
-    email: string;
-    password: string;
-    username?: string;
-}
 /**
  * Login user with email and password
  */

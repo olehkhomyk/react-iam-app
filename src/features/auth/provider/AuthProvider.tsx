@@ -7,6 +7,7 @@ import {
 import { queryClient } from "@/app/api/queryClient.ts";
 import { AUTH_EVENTS, authEventEmitter } from "@/shared/lib/authEventEmitter.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
+import type { LoginRequest, RegisterRequest } from "../model/AuthRequest.ts";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const { data: user, isLoading: isUserLoading } = useUserQuery();
@@ -24,12 +25,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		return () => authEventEmitter.off(AUTH_EVENTS.FAILED, handler);
 	}, []);
 
-	const login = useCallback(async (email: string, password: string) => {
-		await loginMutation.mutateAsync({ email, password });
+	const login = useCallback(async (credentials: LoginRequest) => {
+		await loginMutation.mutateAsync(credentials);
 	}, [loginMutation]);
 
-	const register = useCallback(async (email: string, password: string, username?: string) => {
-		await registerMutation.mutateAsync({ email, password, username });
+	const register = useCallback(async (data: RegisterRequest) => {
+		await registerMutation.mutateAsync(data);
 	}, [registerMutation]);
 
 	const logout = useCallback(() => {
