@@ -9,6 +9,7 @@ import type { PaginationResponse } from "@/shared/model/Pagination.ts";
 import { PostCard } from "@/shared/ui/post-card/post-card.tsx";
 import { DynamicPagination } from "@/shared/ui/dynamic-pagination/DynamicPagination.tsx";
 import { UpdatePostDialog } from "@/features/posts/ui/UpdatePostDialog.tsx";
+import {toast} from "sonner";
 
 export default function Feeds() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export default function Feeds() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      toast.success('Post successfully updated');
     },
     onError: (error) => {
       console.error('Failed to update post:', error);
