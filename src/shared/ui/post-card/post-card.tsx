@@ -7,6 +7,7 @@ interface PostCardProps {
   onLike?: (postId: number) => void;
   onComment?: (postId: number) => void;
   onShare?: (postId: number) => void;
+  onEdit?: (post: Post) => void;
   showActions?: boolean;
   variant?: 'default' | 'compact';
 }
@@ -16,6 +17,7 @@ export function PostCard({
   onLike, 
   onComment, 
   onShare,
+  onEdit,
   variant = 'default'
 }: PostCardProps) {
   if (variant === 'compact') {
@@ -34,6 +36,7 @@ export function PostCard({
       onLike={onLike}
       onComment={onComment}
       onShare={onShare}
+      onEdit={onEdit}
     />
   );
 }
