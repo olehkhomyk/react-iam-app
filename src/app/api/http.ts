@@ -1,6 +1,8 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { authTokens } from "@/shared/lib/authTokens.ts";
 import { authEventEmitter, AUTH_EVENTS } from '@/shared/lib/authEventEmitter.ts';
+import { HTTP_ERROR_EVENTS, httpErrorEventEmitter } from "@/shared/lib/httpErrorEventEmitter.ts";
+import { getErrorMessage } from "@/shared/lib/getErrorMessage.ts";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL as string;
 const SKIP_REFRESH_URLS = ['/auth/login', '/auth/refresh', '/auth/register'];
@@ -58,6 +60,12 @@ http.interceptors.response.use(
         const originalConfig = err.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
         if (!originalConfig || !isAuthError(err) || originalConfig._retry || shouldSkipRefresh(originalConfig)) {
+
+            if (!isAuthError(err)) {
+                const errorMessage = getErrorMessage(err);
+                httpErrorEventEmitter.emit(HTTP_ERROR_EVENTS.ERROR, errorMessage);
+            }
+
             return Promise.reject(err);
         }
 
