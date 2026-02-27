@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { http } from '@/app/api/http.ts';
+import { queryClient } from '@/app/api/queryClient.ts';
 import type { ApiResponse } from "@/features/auth/model/Auth.ts";
 import type { Post } from "@/features/posts/model/Post.ts";
 import type { PaginationResponse } from "@/shared/model/Pagination.ts";
@@ -30,6 +31,19 @@ export default function Feeds() {
   const posts = data?.content ?? [];
   const pagination = data?.pagination ?? null;
 
+  const updatePostMutation = useMutation({
+    mutationFn: async ({ postId, values }: { postId: number; values: { title: string; content: string } }) => {
+      const response = await http.put<ApiResponse<Post>>(`/posts/${postId}`, values);
+      return response.data.payload;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
+    },
+    onError: (error) => {
+      console.error('Failed to update post:', error);
+    },
+  });
+
   const handleLike = (postId: number) => {
     console.log('Liked post:', postId);
     // TODO: Implement like functionality
@@ -51,9 +65,7 @@ export default function Feeds() {
   };
 
   const handleUpdate = async (postId: number, values: { title: string; content: string }) => {
-    console.log('Update post:', postId, values);
-    // TODO: Implement update functionality with API call
-    // For now, just log the values
+    await updatePostMutation.mutateAsync({ postId, values });
   };
 
   return (
