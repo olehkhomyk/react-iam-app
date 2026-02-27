@@ -6,6 +6,7 @@ import { queryClient } from '@/app/api/queryClient.ts';
 import type { ApiResponse } from "@/features/auth/model/Auth.ts";
 import type { Post } from "@/features/posts/model/Post.ts";
 import type { PaginationResponse } from "@/shared/model/Pagination.ts";
+import { PostCard } from "@/shared/ui/post-card/post-card.tsx";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -30,6 +31,21 @@ export default function Dashboard() {
     queryClient.invalidateQueries({ queryKey: ['posts'] });
   };
 
+  const handleLike = (postId: number) => {
+    console.log('Liked post:', postId);
+    // TODO: Implement like functionality
+  };
+
+  const handleComment = (postId: number) => {
+    console.log('Comment on post:', postId);
+    // TODO: Navigate to post or open comment modal
+  };
+
+  const handleShare = (postId: number) => {
+    console.log('Share post:', postId);
+    // TODO: Implement share functionality
+  };
+
   return (
     <div className="min-h-screen">
       {/* Main Content */}
@@ -52,25 +68,16 @@ export default function Dashboard() {
                   <p className="text-red-500">{error instanceof Error ? error.message : 'Failed to fetch posts'}</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6 grid lg:grid-cols-3 gap-3 md:grid-cols-2 sm:grid-cols-1 grid-cols-1">
                   {posts.map((post: Post) => (
-                    <div key={post.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-base font-semibold text-gray-900">{post.title}</h3>
-                        <span className="text-xs text-gray-500">{new Date(post.created).toLocaleDateString()}</span>
-                      </div>
-                      <p className="text-sm text-gray-600 mb-3">{post.content}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span>By: {post.createdBy}</span>
-                          <span className="flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                            </svg>
-                            {post.likes} likes
-                          </span>
-                        </div>
-                      </div>
+                    <div className="">
+                      <PostCard
+                        key={post.id}
+                        post={post}
+                        onLike={handleLike}
+                        onComment={handleComment}
+                        onShare={handleShare}
+                      />
                     </div>
                   ))}
 

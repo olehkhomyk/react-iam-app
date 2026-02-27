@@ -33,7 +33,7 @@ export function AppHeader() {
 					</a>
 					<a href="#"
 						className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-						My Subscriptions
+						Feeds
 					</a>
 				</nav>
 
