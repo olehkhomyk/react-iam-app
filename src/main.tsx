@@ -7,14 +7,19 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "./features/auth/provider/AuthProvider.tsx";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./app/api/queryClient";
+import { ErrorNotificationProvider } from "@/app/providers/ErrorNotificationProvider.tsx";
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
 		<QueryClientProvider client={queryClient}>
-			<AuthProvider>
-				<RouterProvider router={router}/>
-			</AuthProvider>
-			<Toaster richColors position="top-right"/>
+			<ErrorNotificationProvider>
+				<AuthProvider>
+					<RouterProvider router={router}/>
+				</AuthProvider>
+			</ErrorNotificationProvider>
+			<Toaster
+				richColors
+				position="top-right"/>
 		</QueryClientProvider>
 	</StrictMode>,
 )

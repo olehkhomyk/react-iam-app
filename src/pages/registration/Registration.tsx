@@ -44,10 +44,8 @@ export default function Registration() {
 			});
 			toast.success("Registration successful!");
 			navigate('/dashboard');
-		} catch (error) {
-			console.error('Registration failed:', error);
-			// Example: server says "email already exists"
-			setError("email", { message: "Email already exists" });
+		} catch (err: any) {
+				console.error(err);
 		}
 	};
 

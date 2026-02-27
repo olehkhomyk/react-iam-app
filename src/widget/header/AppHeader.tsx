@@ -33,11 +33,7 @@ export function AppHeader() {
 					</a>
 					<a href="#"
 						className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-						Users
-					</a>
-					<a href="#"
-					   className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-						Roles
+						My Subscriptions
 					</a>
 				</nav>
 
