@@ -6,7 +6,7 @@ import { queryClient } from '@/app/api/queryClient.ts';
 import type { ApiResponse } from "@/features/auth/model/Auth.ts";
 import type { Post } from "@/features/posts/model/Post.ts";
 import type { PaginationResponse } from "@/shared/model/Pagination.ts";
-import { PostCard } from "@/shared/ui/post-card/post-card.tsx";
+import { PostList } from "@/shared/ui/post-card/post-list.tsx";
 import { DynamicPagination } from "@/shared/ui/dynamic-pagination/DynamicPagination.tsx";
 import { UpdatePostDialog } from "@/features/posts/ui/UpdatePostDialog.tsx";
 import { PostSearchForm } from "@/features/posts/ui/PostSearchForm.tsx";
@@ -125,31 +125,14 @@ export default function Feeds() {
               <h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
                 Recent Posts
               </h2>
-
-              {loading ? (
-                <div className="text-center py-8">
-                  <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
-                  <p className="mt-2 text-sm text-gray-500">Loading posts...</p>
-                </div>
-              ) : error ? (
-                <div className="text-center py-8">
-                  <p className="text-red-500">{error instanceof Error ? error.message : 'Failed to fetch posts'}</p>
-                </div>
-              ) : (
                 <>
-                  <div className="space-y-6 grid grid-cols-1">
-                    {posts.map((post: Post) => (
-                      <div key={post.id}>
-                        <PostCard
-                          post={post}
-                          onLike={handleLike}
-                          onComment={handleComment}
-                          onShare={handleShare}
-                          actions={postActions}
-                        />
-                      </div>
-                    ))}
-                  </div>
+                  <PostList
+                    posts={posts}
+                    onLike={handleLike}
+                    onComment={handleComment}
+                    onShare={handleShare}
+                    actions={postActions}
+                  />
                   
                   {pagination && (
                     <DynamicPagination
