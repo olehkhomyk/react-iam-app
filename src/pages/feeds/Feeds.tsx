@@ -25,7 +25,7 @@ export default function Feeds() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [searchParams, setSearchParams] = useState<PostSearchRequest>({});
 
-  const { data, isLoading: loading, error } = useQuery({
+  const { data, isLoading: loading, isFetching } = useQuery({
     queryKey: ['posts', page, limit, searchParams],
     queryFn: async () => {
       const response = await http.post<ApiResponse<PaginationResponse<Post>>>(
@@ -117,7 +117,7 @@ export default function Feeds() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0 space-y-6">
           {/* Search Form */}
-          <PostSearchForm onSearch={handleSearch} isLoading={loading} />
+          <PostSearchForm onSearch={handleSearch} isLoading={isFetching} />
 
           {/* Posts Section */}
           <div className="bg-white overflow-hidden shadow rounded-lg">
@@ -128,6 +128,7 @@ export default function Feeds() {
                 <>
                   <PostList
                     posts={posts}
+                    loading={isFetching}
                     onLike={handleLike}
                     onComment={handleComment}
                     onShare={handleShare}

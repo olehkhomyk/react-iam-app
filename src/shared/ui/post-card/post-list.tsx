@@ -2,19 +2,18 @@ import type {Post} from '@/features/posts/model/Post';
 import type {PostAction} from './types';
 import {PostCard} from './post-card';
 import {Spinner} from "@/components/ui/spinner.tsx";
-import React from "react";
 
 interface PostListProps {
 	posts: Post[];
-	isLoading?: boolean;
+	loading?: boolean;
 	onLike?: (postId: number) => void;
 	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }
 
-export function PostList({posts, onLike, onComment, onShare, actions, isLoading = false}: PostListProps) {
-	if (posts.length === 0 && !isLoading) {
+export function PostList({posts, onLike, onComment, onShare, actions, loading = false}: PostListProps) {
+	if (posts.length === 0 && !loading) {
 		return (
 			<div className="text-center py-12">
 				<p className="text-gray-500 text-sm">No results found</p>
@@ -22,7 +21,7 @@ export function PostList({posts, onLike, onComment, onShare, actions, isLoading 
 		);
 	}
 
-	if (isLoading) {
+	if (loading) {
 		return (
 			<div className="flex items-center justify-center py-12">
 				<Spinner className="size-8 text-indigo-500"/>
