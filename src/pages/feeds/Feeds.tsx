@@ -142,7 +142,6 @@ export default function Feeds() {
                     />
                   )}
                 </>
-              )}
             </div>
           </div>
         </div>
