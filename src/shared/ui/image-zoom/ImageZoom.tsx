@@ -65,12 +65,12 @@ export function ImageZoom({
           </button>
         </DialogClose>
 
-        <div className="flex items-center justify-center h-full w-full">
+        <div className="flex items-center justify-center h-full w-full p-4">
           <img
             src={zoomedSrc ?? src}
             alt={alt}
             className={
-              "max-w-full max-h-full object-contain transition-all duration-300 ease-in-out " +
+              "max-w-full max-h-[calc(80vh-2rem)] object-contain transition-all duration-300 ease-in-out " +
               (loaded ? "scale-100 opacity-100" : "scale-95 opacity-0")
             }
             onLoad={() => setLoaded(true)}
