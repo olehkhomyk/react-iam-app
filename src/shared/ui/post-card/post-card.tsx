@@ -13,6 +13,7 @@ import type {Post} from '@/features/posts/model/Post';
 import {getInitials, formatDate} from './utils';
 import {ImageZoom} from '@/shared/ui/image-zoom/ImageZoom';
 import type {PostAction} from './types';
+import {PostComments} from './PostComments';
 
 interface PostCardProps {
 	post: Post;
@@ -26,6 +27,7 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 	const [isLiked, setIsLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(post.likes);
 	const [isExpanded, setIsExpanded] = useState(false);
+	const [showComments, setShowComments] = useState(false);
 
 	const CONTENT_PREVIEW_LENGTH = 200;
 	const shouldShowReadMore = post.content.length > CONTENT_PREVIEW_LENGTH;
@@ -42,8 +44,7 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 	};
 
 	return (
-		<div
-			className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+		<div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
 			<div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-5">
 				{/* Compact Image with Zoom */}
 				<div className="relative flex-shrink-0 w-full sm:w-auto">
@@ -151,13 +152,16 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 								<span className="text-sm font-medium">{likeCount}</span>
 							</Button>
 							<Button
-								variant="ghost"
+								variant={showComments ? 'secondary' : 'ghost'}
 								size="sm"
-								onClick={() => onComment?.(post.id)}
+								onClick={() => {
+									setShowComments(v => !v);
+									onComment?.(post.id);
+								}}
 								className="h-9 px-3 text-gray-600 hover:text-gray-900"
 							>
-								<MessageCircle className="w-4 h-4 mr-2"/>
-								<span className="text-sm font-medium">Reply</span>
+								<MessageCircle className={`w-4 h-4 mr-2 ${showComments ? 'fill-current' : ''}`}/>
+								<span className="text-sm font-medium">Comments</span>
 							</Button>
 							<Button
 								variant="ghost"
@@ -172,6 +176,7 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 					</div>
 				</div>
 			</div>
+			{showComments && <PostComments postId={post.id}/>}
 		</div>
 	);
 }
