@@ -13,7 +13,7 @@ import type {Post} from '@/features/posts/model/Post';
 import {getInitials, formatDate} from './utils';
 import {ImageZoom} from '@/shared/ui/image-zoom/ImageZoom';
 import type {PostAction} from './types';
-import {PostComments} from './PostComments';
+import {PostComments} from '@/features/comments/ui/PostComments';
 
 interface PostCardProps {
 	post: Post;
@@ -32,7 +32,6 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 	const CONTENT_PREVIEW_LENGTH = 200;
 	const shouldShowReadMore = post.content.length > CONTENT_PREVIEW_LENGTH;
 
-	// Filter actions based on show condition
 	const visibleActions = actions.filter(action =>
 		action.show === undefined || action.show(post)
 	);

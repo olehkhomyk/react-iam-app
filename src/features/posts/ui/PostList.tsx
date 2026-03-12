@@ -1,7 +1,7 @@
 import type {Post} from '@/features/posts/model/Post';
 import type {PostAction} from './types';
-import {PostCard} from './post-card';
-import {Spinner} from "@/components/ui/spinner.tsx";
+import {PostCard} from './PostCard';
+import {Spinner} from '@/components/ui/spinner';
 
 interface PostListProps {
 	posts: Post[];
@@ -26,7 +26,7 @@ export function PostList({posts, onLike, onComment, onShare, actions, loading = 
 			<div className="flex items-center justify-center py-12">
 				<Spinner className="size-8 text-indigo-500"/>
 			</div>
-		)
+		);
 	}
 
 	return (
@@ -42,5 +42,5 @@ export function PostList({posts, onLike, onComment, onShare, actions, loading = 
 				/>
 			))}
 		</div>
-	)
+	);
 }

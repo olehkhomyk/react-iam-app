@@ -7,7 +7,7 @@ import {Spinner} from '@/components/ui/spinner';
 import {Send} from 'lucide-react';
 import {fetchComments, addComment} from '@/features/comments/api/commentsApi';
 import type {Comment} from '@/features/comments/model/Comment';
-import {getInitials, formatDate} from './utils';
+import {getInitials, formatDate} from '@/features/posts/ui/utils';
 
 const INITIAL_LIMIT = 3;
 const LOAD_MORE_LIMIT = 5;
