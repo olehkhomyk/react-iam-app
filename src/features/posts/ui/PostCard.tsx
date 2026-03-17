@@ -25,7 +25,7 @@ interface PostCardProps {
 
 export function PostCard({post, onLike, onComment, onShare, actions = []}: PostCardProps) {
 	const [isLiked, setIsLiked] = useState(false);
-	const [likeCount, setLikeCount] = useState(post.likes);
+	const [likeCount, setLikeCount] = useState(post.likesCount);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showComments, setShowComments] = useState(false);
 
@@ -41,6 +41,7 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 		setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
 		onLike?.(post.id);
 	};
+
 
 	return (
 		<div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
