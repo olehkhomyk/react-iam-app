@@ -19,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
 			</ErrorNotificationProvider>
 			<Toaster
 				richColors
+				closeButton
 				position="top-right"/>
 		</QueryClientProvider>
 	</StrictMode>,

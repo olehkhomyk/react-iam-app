@@ -42,7 +42,6 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 		onLike?.(post.id);
 	};
 
-
 	return (
 		<div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
 			<div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-5">
