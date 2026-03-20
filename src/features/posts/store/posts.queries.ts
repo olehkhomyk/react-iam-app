@@ -20,6 +20,19 @@ export function usePostsQuery(page: number, limit: number, searchParams: PostSea
 	});
 }
 
+export function useCreatePostMutation() {
+	return useMutation({
+		mutationFn: async (values: {title: string; content: string}) => {
+			const response = await http.post<ApiResponse<Post>>('/posts', values);
+			return response.data.payload;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['posts']});
+			toast.success('Post successfully created');
+		},
+	});
+}
+
 export function useUpdatePostMutation() {
 	return useMutation({
 		mutationFn: async ({postId, values}: {postId: number; values: {title: string; content: string}}) => {

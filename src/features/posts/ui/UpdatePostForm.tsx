@@ -148,7 +148,7 @@ export function UpdatePostForm({
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Likes:</span>
-                  <span className="font-semibold">{post.likes}</span>
+                  <span className="font-semibold">{post.likesCount}</span>
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-muted-foreground font-medium">Created:</span>
