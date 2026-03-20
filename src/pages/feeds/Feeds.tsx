@@ -1,11 +1,13 @@
 import {useState, useMemo} from 'react';
 import type {Post} from '@/features/posts/model/Post';
 import type {PostSearchFormValues, PostSearchRequest} from '@/features/posts/model/PostSearch';
-import {usePostsQuery, useUpdatePostMutation} from '@/features/posts/store/posts.queries';
+import {usePostsQuery, useUpdatePostMutation, useCreatePostMutation} from '@/features/posts/store/posts.queries';
 import {PostList} from '@/features/posts/ui/PostList';
 import {PostActions} from '@/features/posts/ui/PostActions';
 import {PostSearchForm} from '@/features/posts/ui/PostSearchForm';
 import {UpdatePostDialog} from '@/features/posts/ui/UpdatePostDialog';
+import {CreatePostDialog} from '@/features/posts/ui/CreatePostDialog';
+import {Button} from '@/components/ui/button';
 import {DynamicPagination} from '@/shared/ui/dynamic-pagination/DynamicPagination';
 import {useAuth} from '@/features/auth/context/useAuth';
 import {toast} from 'sonner';
@@ -17,10 +19,12 @@ export default function Feeds() {
 	const limit = 5;
 	const [editingPost, setEditingPost] = useState<Post | null>(null);
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 	const [searchParams, setSearchParams] = useState<PostSearchRequest>({});
 
 	const {data, isFetching} = usePostsQuery(page, limit, searchParams);
 	const updatePostMutation = useUpdatePostMutation();
+	const createPostMutation = useCreatePostMutation();
 
 	const posts = data?.content ?? [];
 	const pagination = data?.pagination ?? null;
@@ -58,6 +62,10 @@ export default function Feeds() {
 		await updatePostMutation.mutateAsync({postId, values});
 	};
 
+	const handleCreate = async (values: {title: string; content: string}) => {
+		await createPostMutation.mutateAsync(values);
+	};
+
 	const handleSearch = (values: PostSearchFormValues) => {
 		setSearchParams({
 			keyword: values.keyword || undefined,
@@ -80,9 +88,14 @@ export default function Feeds() {
 
 					<div className="bg-white overflow-hidden shadow rounded-lg">
 						<div className="px-4 py-5 sm:p-6">
-							<h2 className="text-lg leading-6 font-medium text-gray-900 mb-4">
-								Recent Posts
-							</h2>
+							<div className="flex items-center justify-between mb-4">
+								<h2 className="text-lg leading-6 font-medium text-gray-900">
+									Recent Posts
+								</h2>
+								<Button onClick={() => setIsCreateDialogOpen(true)}>
+									Create Post
+								</Button>
+							</div>
 							<>
 								<PostList
 									posts={posts}
@@ -112,6 +125,14 @@ export default function Feeds() {
 					open={isEditDialogOpen}
 					onOpenChange={setIsEditDialogOpen}
 					onUpdate={handleUpdate}
+				/>
+			)}
+
+			{isCreateDialogOpen && (
+				<CreatePostDialog
+					open={isCreateDialogOpen}
+					onOpenChange={setIsCreateDialogOpen}
+					onCreate={handleCreate}
 				/>
 			)}
 		</div>
