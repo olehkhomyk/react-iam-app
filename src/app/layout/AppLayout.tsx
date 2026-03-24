@@ -1,4 +1,4 @@
-import type React from "react";
+import type React from 'react';
 import { AppFooter } from "@/widget/footer/AppFooter.tsx";
 import { AppHeader } from "@/widget/header/AppHeader.tsx";
 import { Outlet } from "react-router-dom";

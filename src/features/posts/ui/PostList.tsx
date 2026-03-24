@@ -6,7 +6,7 @@ import {Spinner} from '@/components/ui/spinner';
 interface PostListProps {
 	posts: Post[];
 	loading?: boolean;
-	onLike?: (postId: number) => void;
+	onLike?: (post: Post, isLiked: boolean) => void;
 	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];

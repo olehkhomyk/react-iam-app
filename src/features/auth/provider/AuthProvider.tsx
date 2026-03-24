@@ -53,7 +53,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const isInitializing = isUserLoading && !user;
 
 	if (isInitializing) {
-		return <Spinner className="size-8"/>;
+		return (
+			<div className="flex items-center justify-center min-h-screen bg-background/50">
+				<Spinner className="size-8"/>
+			</div>
+		);
 	}
 
 	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

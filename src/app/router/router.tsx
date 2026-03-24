@@ -1,18 +1,18 @@
-import { createBrowserRouter } from "react-router-dom";
-import Login from "../../pages/login/Login.tsx";
-import Feeds from "@/pages/feeds/Feeds.tsx";
-import RequireAuth from "./RequireAuth.tsx";
-import Registration from "../../pages/registration/Registration.tsx";
-import { AppLayout } from "@/app/layout/AppLayout.tsx";
+import { createBrowserRouter } from 'react-router-dom';
+import Login from '../../pages/login/Login.tsx';
+import Feeds from '@/pages/feeds/Feeds.tsx';
+import RequireAuth from './RequireAuth.tsx';
+import Registration from '../../pages/registration/Registration.tsx';
+import { AppLayout } from '@/app/layout/AppLayout.tsx';
 
 export const router = createBrowserRouter([
-	{ path: "/login", element: <Login /> },
-	{ path: "/register", element: <Registration /> },
+	{ path: '/login', element: <Login /> },
+	{ path: '/register', element: <Registration /> },
   {
     element: <AppLayout />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: (
           <RequireAuth>
             <Feeds />
@@ -20,7 +20,7 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "/feeds",
+        path: '/feeds',
         element: (
           <RequireAuth>
             <Feeds />
