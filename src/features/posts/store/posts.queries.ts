@@ -54,7 +54,6 @@ export function useLikePostMutation() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['posts'] });
-			toast.success('Post successfully liked');
 		},
 	});
 }
@@ -67,7 +66,6 @@ export function useUnlikePostMutation() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ['posts'] });
-			toast.success('Post successfully liked');
 		},
 	});
 }

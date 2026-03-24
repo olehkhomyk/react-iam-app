@@ -1,7 +1,7 @@
-import type {Post} from '@/features/posts/model/Post';
-import type {PostAction} from './types';
-import {PostCard} from './PostCard';
-import {Spinner} from '@/components/ui/spinner';
+import type { Post } from '@/features/posts/model/Post';
+import type { PostAction } from './types';
+import { PostCard } from './PostCard';
+import { Spinner } from '@/components/ui/spinner';
 
 interface PostListProps {
 	posts: Post[];
@@ -12,7 +12,7 @@ interface PostListProps {
 	actions?: PostAction[];
 }
 
-export function PostList({posts, onLike, onComment, onShare, actions, loading = false}: PostListProps) {
+export function PostList({ posts, onComment, onShare, actions, loading = false }: PostListProps) {
 	if (posts.length === 0 && !loading) {
 		return (
 			<div className="text-center py-12">
@@ -35,7 +35,6 @@ export function PostList({posts, onLike, onComment, onShare, actions, loading = 
 				<PostCard
 					key={post.id}
 					post={post}
-					onLike={onLike}
 					onComment={onComment}
 					onShare={onShare}
 					actions={actions}

@@ -1,7 +1,7 @@
-import {useState} from 'react';
-import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar';
-import {Button} from '@/components/ui/button';
-import {Heart, MessageCircle, Share2, MoreVertical} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Heart, MessageCircle, Share2, MoreVertical } from 'lucide-react';
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -9,53 +9,66 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type {Post} from '@/features/posts/model/Post';
-import {getInitials, formatDate} from './utils';
-import {ImageZoom} from '@/shared/ui/image-zoom/ImageZoom';
-import type {PostAction} from './types';
-import {PostComments} from '@/features/comments/ui/PostComments';
+import type { Post } from '@/features/posts/model/Post';
+import { getInitials, formatDate } from './utils';
+import { ImageZoom } from '@/shared/ui/image-zoom/ImageZoom';
+import type { PostAction } from './types';
+import { PostComments } from '@/features/comments/ui/PostComments';
 import { isPostLiked } from '@/shared/helper/post-like.helper.ts';
 import { useAuth } from '@/features/auth/context/useAuth.ts';
+import { useLikePostMutation, useUnlikePostMutation } from '@/features/posts/store/posts.queries.ts';
 
 interface PostCardProps {
 	post: Post;
-	onLike?: (post: Post, isLiked: boolean) => void;
 	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }
 
-export function PostCard({post, onLike, onComment, onShare, actions = []}: PostCardProps) {
+export function PostCard({ post, onComment, onShare, actions = [] }: PostCardProps) {
 	const auth = useAuth();
+	const likedByServer = isPostLiked(post, auth.user!.id);
 
-	const likedStateFromServer =  isPostLiked(post, auth.user!.id);
+	const [isLikeInPending, setIsLikeInPending] = useState(false);
 
-	const [isLiked, setIsLiked] = useState(likedStateFromServer);
-	const [likeCount, setLikeCount] = useState(post.likesCount);
+	const isLiked = isLikeInPending ? !likedByServer : likedByServer;
+	const likeCount = isLikeInPending
+		? post.likesCount + (likedByServer ? -1 : 1)
+		: post.likesCount;
+
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showComments, setShowComments] = useState(false);
-	//
-	// if (likedStateFromServer !== isLiked) {
-	// 	setIsLiked(isLiked);
-	// }
+
+	const likePostMutation = useLikePostMutation();
+	const unlikePostMutation = useUnlikePostMutation();
 
 	const CONTENT_PREVIEW_LENGTH = 200;
 	const shouldShowReadMore = post.content.length > CONTENT_PREVIEW_LENGTH;
-
-
 
 	const visibleActions = actions.filter(action =>
 		action.show === undefined || action.show(post)
 	);
 
-	const handleLike = () => {
-		setIsLiked(!isLiked);
-		setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-		onLike?.(post, isLiked);
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setIsLikeInPending(false);
+	}, [likedByServer]);
+
+	const handleLike = async () => {
+		if (isLikeInPending) return;
+
+		setIsLikeInPending(true);
+
+		if (likedByServer) {
+			await unlikePostMutation.mutateAsync(post.id);
+		} else {
+			await likePostMutation.mutateAsync(post.id);
+		}
 	};
 
 	return (
-		<div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
+		<div
+			className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
 			<div className="flex flex-col sm:flex-row gap-4 p-4 sm:p-5">
 				{/* Compact Image with Zoom */}
 				<div className="relative flex-shrink-0 w-full sm:w-auto">
