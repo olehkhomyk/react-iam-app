@@ -16,16 +16,15 @@ import type { PostAction } from './types';
 import { PostComments } from '@/features/comments/ui/PostComments';
 import { isPostLiked } from '@/shared/helper/post-like.helper.ts';
 import { useAuth } from '@/features/auth/context/useAuth.ts';
-import { useLikePostMutation, useUnlikePostMutation } from '@/features/posts/store/posts.queries.ts';
+import { useLikePostMutation, useUnlikePostMutation } from '@/features/posts/store/PostLikesStore.ts';
 
 interface PostCardProps {
 	post: Post;
-	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }
 
-export function PostCard({ post, onComment, onShare, actions = [] }: PostCardProps) {
+export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
 	const auth = useAuth();
 	const likedByServer = isPostLiked(post, auth.user!.id);
 
@@ -178,10 +177,7 @@ export function PostCard({ post, onComment, onShare, actions = [] }: PostCardPro
 							<Button
 								variant={showComments ? 'secondary' : 'ghost'}
 								size="sm"
-								onClick={() => {
-									setShowComments(v => !v);
-									onComment?.(post.id);
-								}}
+								onClick={() => setShowComments(v => !v)}
 								className="h-9 px-3 text-gray-600 hover:text-gray-900"
 							>
 								<MessageCircle className={`w-4 h-4 mr-2 ${showComments ? 'fill-current' : ''}`}/>

@@ -7,12 +7,11 @@ interface PostListProps {
 	posts: Post[];
 	loading?: boolean;
 	onLike?: (post: Post, isLiked: boolean) => void;
-	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }
 
-export function PostList({ posts, onComment, onShare, actions, loading = false }: PostListProps) {
+export function PostList({ posts, onShare, actions, loading = false }: PostListProps) {
 	if (posts.length === 0 && !loading) {
 		return (
 			<div className="text-center py-12">
@@ -35,7 +34,6 @@ export function PostList({ posts, onComment, onShare, actions, loading = false }
 				<PostCard
 					key={post.id}
 					post={post}
-					onComment={onComment}
 					onShare={onShare}
 					actions={actions}
 				/>

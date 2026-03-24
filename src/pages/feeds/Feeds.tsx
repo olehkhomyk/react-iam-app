@@ -3,7 +3,7 @@ import type { Post } from '@/features/posts/model/Post';
 import type { PostSearchFormValues, PostSearchRequest } from '@/features/posts/model/PostSearch';
 import {
 	usePostsQuery, useUpdatePostMutation, useCreatePostMutation
-} from '@/features/posts/store/posts.queries';
+} from '@/features/posts/store/PostStore.ts';
 import { PostList } from '@/features/posts/ui/PostList';
 import { PostActions } from '@/features/posts/ui/PostActions';
 import { PostSearchForm } from '@/features/posts/ui/PostSearchForm';
@@ -30,11 +30,6 @@ export default function Feeds() {
 
 	const posts = data?.content ?? [];
 	const pagination = data?.pagination ?? null;
-
-
-	const handleComment = (postId: number) => {
-		console.log('Comment on post:', postId);
-	};
 
 	const handleShare = (postId: number) => {
 		console.log('Share post:', postId);
@@ -98,7 +93,6 @@ export default function Feeds() {
 								<PostList
 									posts={posts}
 									loading={isLoading && posts.length === 0}
-									onComment={handleComment}
 									onShare={handleShare}
 									actions={postActions}
 								/>
