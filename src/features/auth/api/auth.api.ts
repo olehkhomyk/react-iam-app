@@ -1,13 +1,13 @@
-import { http } from "@/app/api/http.ts";
-import { authTokens } from "@/shared/lib/authTokens.ts";
-import type { AuthResponse, UserResponse, TokenResponse, UserProfile } from "../model/Auth.ts";
-import type { LoginRequest, RegisterRequest } from "@/features/auth/model/AuthRequest.ts";
+import { http } from '@/app/api/http.ts';
+import { authTokens } from '@/shared/lib/authTokens.ts';
+import type { AuthResponse, UserResponse, TokenResponse, UserProfile } from '../model/Auth.ts';
+import type { LoginRequest, RegisterRequest } from '@/features/auth/model/AuthRequest.ts';
 
 /**
  * Login user with email and password
  */
 export async function login(credentials: LoginRequest): Promise<TokenResponse> {
-    const response = await http.post<AuthResponse>("/auth/login", credentials);
+    const response = await http.post<AuthResponse>('/auth/login', credentials);
     return response.data.payload;
 }
 
@@ -15,7 +15,7 @@ export async function login(credentials: LoginRequest): Promise<TokenResponse> {
  * Register new user
  */
 export async function register(userData: RegisterRequest): Promise<TokenResponse> {
-    const response = await http.post<AuthResponse>("/auth/register", userData);
+    const response = await http.post<AuthResponse>('/auth/register', userData);
     return response.data.payload;
 }
 
@@ -23,7 +23,7 @@ export async function register(userData: RegisterRequest): Promise<TokenResponse
  * Get current authenticated user
  */
 export async function getCurrentUser(): Promise<UserProfile> {
-    const response = await http.get<UserResponse>("/users/me");
+    const response = await http.get<UserResponse>('/users/me');
     return response.data.payload;
 }
 

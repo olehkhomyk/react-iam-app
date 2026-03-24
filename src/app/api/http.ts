@@ -1,8 +1,8 @@
-import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
-import { authTokens } from "@/shared/lib/authTokens.ts";
+import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { authTokens } from '@/shared/lib/authTokens.ts';
 import { authEventEmitter, AUTH_EVENTS } from '@/shared/lib/authEventEmitter.ts';
-import { HTTP_ERROR_EVENTS, httpErrorEventEmitter } from "@/shared/lib/httpErrorEventEmitter.ts";
-import { getErrorMessage } from "@/shared/lib/getErrorMessage.ts";
+import { HTTP_ERROR_EVENTS, httpErrorEventEmitter } from '@/shared/lib/httpErrorEventEmitter.ts';
+import { getErrorMessage } from '@/shared/lib/getErrorMessage.ts';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL as string;
 const SKIP_REFRESH_URLS = ['/auth/login', '/auth/refresh', '/auth/register'];
@@ -13,7 +13,7 @@ const BEARER_PREFIX = 'Bearer';
 export const http = axios.create({
     baseURL: API_BASE_URL,
     // withCredentials: true,
-    timeout: 15000,
+    timeout: 30000,
 });
 
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -30,16 +30,16 @@ function isAuthError(error: AxiosError) {
 }
 
 function shouldSkipRefresh(config?: InternalAxiosRequestConfig) {
-    const url = config?.url ?? "";
+    const url = config?.url ?? '';
     return SKIP_REFRESH_URLS.some(skip => url.includes(skip));
 }
 
 async function refreshAccessToken(): Promise<string> {
     const refreshToken = authTokens.getRefresh();
-    if (!refreshToken) throw new Error("No refresh token");
+    if (!refreshToken) throw new Error('No refresh token');
 
     const plain = axios.create({ baseURL: API_BASE_URL });
-    const res = await plain.get("/auth/refresh/token", { params: { token: refreshToken } });
+    const res = await plain.get('/auth/refresh/token', { params: { token: refreshToken } });
 
     const tokens = res.data.payload || res.data;
     authTokens.set({

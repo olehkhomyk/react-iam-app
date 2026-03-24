@@ -122,7 +122,7 @@ export function PostSearchForm({ onSearch, isLoading = false }: PostSearchFormPr
             {/* Buttons - Right */}
             <div className="flex gap-2">
               <Button 
-                type="submit" 
+                type="submit"
                 disabled={isLoading}
                 className="flex-1 sm:flex-none"
               >

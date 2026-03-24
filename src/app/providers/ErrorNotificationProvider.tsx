@@ -1,5 +1,5 @@
 // src/app/providers/ErrorNotificationProvider.tsx
-import { useEffect } from "react";
+import { useEffect } from 'react';
 import { toast } from "sonner";
 import { HTTP_ERROR_EVENTS, httpErrorEventEmitter } from "@/shared/lib/httpErrorEventEmitter.ts";
 

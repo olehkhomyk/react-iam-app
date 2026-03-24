@@ -14,23 +14,35 @@ import {getInitials, formatDate} from './utils';
 import {ImageZoom} from '@/shared/ui/image-zoom/ImageZoom';
 import type {PostAction} from './types';
 import {PostComments} from '@/features/comments/ui/PostComments';
+import { isPostLiked } from '@/shared/helper/post-like.helper.ts';
+import { useAuth } from '@/features/auth/context/useAuth.ts';
 
 interface PostCardProps {
 	post: Post;
-	onLike?: (postId: number) => void;
+	onLike?: (post: Post, isLiked: boolean) => void;
 	onComment?: (postId: number) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }
 
 export function PostCard({post, onLike, onComment, onShare, actions = []}: PostCardProps) {
-	const [isLiked, setIsLiked] = useState(false);
+	const auth = useAuth();
+
+	const likedStateFromServer =  isPostLiked(post, auth.user!.id);
+
+	const [isLiked, setIsLiked] = useState(likedStateFromServer);
 	const [likeCount, setLikeCount] = useState(post.likesCount);
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [showComments, setShowComments] = useState(false);
+	//
+	// if (likedStateFromServer !== isLiked) {
+	// 	setIsLiked(isLiked);
+	// }
 
 	const CONTENT_PREVIEW_LENGTH = 200;
 	const shouldShowReadMore = post.content.length > CONTENT_PREVIEW_LENGTH;
+
+
 
 	const visibleActions = actions.filter(action =>
 		action.show === undefined || action.show(post)
@@ -39,7 +51,7 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 	const handleLike = () => {
 		setIsLiked(!isLiked);
 		setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-		onLike?.(post.id);
+		onLike?.(post, isLiked);
 	};
 
 	return (

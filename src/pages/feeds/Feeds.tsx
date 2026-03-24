@@ -1,19 +1,23 @@
-import {useState, useMemo} from 'react';
-import type {Post} from '@/features/posts/model/Post';
-import type {PostSearchFormValues, PostSearchRequest} from '@/features/posts/model/PostSearch';
-import {usePostsQuery, useUpdatePostMutation, useCreatePostMutation} from '@/features/posts/store/posts.queries';
-import {PostList} from '@/features/posts/ui/PostList';
-import {PostActions} from '@/features/posts/ui/PostActions';
-import {PostSearchForm} from '@/features/posts/ui/PostSearchForm';
-import {UpdatePostDialog} from '@/features/posts/ui/UpdatePostDialog';
-import {CreatePostDialog} from '@/features/posts/ui/CreatePostDialog';
-import {Button} from '@/components/ui/button';
-import {DynamicPagination} from '@/shared/ui/dynamic-pagination/DynamicPagination';
-import {useAuth} from '@/features/auth/context/useAuth';
-import {toast} from 'sonner';
+import { useState, useMemo } from 'react';
+import { debounce, reduce } from 'lodash';
+import type { Post } from '@/features/posts/model/Post';
+import type { PostSearchFormValues, PostSearchRequest } from '@/features/posts/model/PostSearch';
+import {
+	usePostsQuery, useUpdatePostMutation, useCreatePostMutation, useLikePostMutation, useUnlikePostMutation
+} from '@/features/posts/store/posts.queries';
+import { PostList } from '@/features/posts/ui/PostList';
+import { PostActions } from '@/features/posts/ui/PostActions';
+import { PostSearchForm } from '@/features/posts/ui/PostSearchForm';
+import { UpdatePostDialog } from '@/features/posts/ui/UpdatePostDialog';
+import { CreatePostDialog } from '@/features/posts/ui/CreatePostDialog';
+import { Button } from '@/components/ui/button';
+import { DynamicPagination } from '@/shared/ui/dynamic-pagination/DynamicPagination';
+import { useAuth } from '@/features/auth/context/useAuth';
+import { toast } from 'sonner';
+import { isPostLiked } from '@/shared/helper/post-like.helper.ts';
 
 export default function Feeds() {
-	const {user} = useAuth();
+	const { user } = useAuth();
 
 	const [page, setPage] = useState(1);
 	const limit = 5;
@@ -22,17 +26,37 @@ export default function Feeds() {
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 	const [searchParams, setSearchParams] = useState<PostSearchRequest>({});
 
-	const {data, isFetching} = usePostsQuery(page, limit, searchParams);
+	const { data, isFetching, isLoading } = usePostsQuery(page, limit, searchParams);
 	const updatePostMutation = useUpdatePostMutation();
 	const createPostMutation = useCreatePostMutation();
+	const likePostMutation = useLikePostMutation();
+	const unlikePostMutation = useUnlikePostMutation();
 
 	const posts = data?.content ?? [];
 	const pagination = data?.pagination ?? null;
 
-	const handleLike = (postId: number) => {
-		console.log('Liked post:', postId);
-		// TODO: Implement like functionality
-	};
+	const likesMap: Record<number, boolean> = reduce(posts, (acc, post) => {
+		acc[post.id] = isPostLiked(post, user!.id)
+
+		return acc;
+	}, {} as Record<number, boolean>);
+
+	const handleLike = debounce(
+		async (post: Post, isLike: boolean) => {
+			const postLikeState = likesMap[post.id];
+
+			if (postLikeState === isLike) {
+				return;
+			}
+
+			if (isLike) {
+				await unlikePostMutation.mutateAsync(post.id);
+			} else {
+				await likePostMutation.mutateAsync(post.id);
+			}
+		},
+		500
+	);
 
 	const handleComment = (postId: number) => {
 		console.log('Comment on post:', postId);
@@ -58,11 +82,11 @@ export default function Feeds() {
 		toast.info('Report functionality coming soon');
 	};
 
-	const handleUpdate = async (postId: number, values: {title: string; content: string}) => {
-		await updatePostMutation.mutateAsync({postId, values});
+	const handleUpdate = async (postId: number, values: { title: string; content: string }) => {
+		await updatePostMutation.mutateAsync({ postId, values });
 	};
 
-	const handleCreate = async (values: {title: string; content: string}) => {
+	const handleCreate = async (values: { title: string; content: string }) => {
 		await createPostMutation.mutateAsync(values);
 	};
 
@@ -99,7 +123,7 @@ export default function Feeds() {
 							<>
 								<PostList
 									posts={posts}
-									loading={isFetching}
+									loading={isLoading && posts.length === 0}
 									onLike={handleLike}
 									onComment={handleComment}
 									onShare={handleShare}
