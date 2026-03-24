@@ -6,10 +6,11 @@ import type { ApiResponse } from '@/features/auth/model/Auth';
 import type { Post } from '@/features/posts/model/Post';
 import type { PaginationResponse } from '@/shared/model/Pagination';
 import type { PostSearchRequest } from '@/features/posts/model/PostSearch';
+import { postQueryKeys } from '@/features/posts/store/postQueryKeys';
 
 export function usePostsQuery(page: number, limit: number, searchParams: PostSearchRequest) {
 	return useQuery({
-		queryKey: ['posts', page, limit, searchParams],
+		queryKey: postQueryKeys.list(page, limit, searchParams),
 		queryFn: async () => {
 			const response = await http.post<ApiResponse<PaginationResponse<Post>>>(
 				`/posts/search?page=${page - 1}&limit=${limit}`,
@@ -27,7 +28,7 @@ export function useCreatePostMutation() {
 			return response.data.payload;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['posts'] });
+			queryClient.invalidateQueries({ queryKey: postQueryKeys.all() });
 			toast.success('Post successfully created');
 		},
 	});
@@ -40,34 +41,11 @@ export function useUpdatePostMutation() {
 			return response.data.payload;
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['posts'] });
+			queryClient.invalidateQueries({ queryKey: postQueryKeys.all() });
 			toast.success('Post successfully updated');
 		},
 	});
 }
 
-export function useLikePostMutation() {
-	return useMutation({
-		mutationFn: async (postId: number) => {
-			const response = await http.post<ApiResponse<Post>>(`/posts/${postId}/like`);
-			return response.data.payload;
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['posts'] });
-		},
-	});
-}
-
-export function useUnlikePostMutation() {
-	return useMutation({
-		mutationFn: async (postId: number) => {
-			const response = await http.delete<ApiResponse<Post>>(`/posts/${postId}/like`);
-			return response.data.payload;
-		},
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: ['posts'] });
-		},
-	});
-}
 
 
