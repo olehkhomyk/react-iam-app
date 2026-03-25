@@ -36,7 +36,6 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
 		: post.likesCount;
 
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [showComments, setShowComments] = useState(false);
 
 	const likePostMutation = useLikePostMutation();
 	const unlikePostMutation = useUnlikePostMutation();
@@ -174,15 +173,14 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
 								<Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current' : ''}`}/>
 								<span className="text-sm font-medium">{likeCount}</span>
 							</Button>
-							<Button
-								variant={showComments ? 'secondary' : 'ghost'}
-								size="sm"
-								onClick={() => setShowComments(v => !v)}
-								className="h-9 px-3 text-gray-600 hover:text-gray-900"
-							>
-								<MessageCircle className={`w-4 h-4 mr-2 ${showComments ? 'fill-current' : ''}`}/>
-								<span className="text-sm font-medium">Comments</span>
-							</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-9 px-3 text-gray-600 cursor-default pointer-events-none"
+						>
+							<MessageCircle className="w-4 h-4 mr-2"/>
+							<span className="text-sm font-medium">Comments ({post.totalComments})</span>
+						</Button>
 							<Button
 								variant="ghost"
 								size="sm"
@@ -196,7 +194,7 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
 					</div>
 				</div>
 			</div>
-			{showComments && <PostComments postId={post.id}/>}
+			<PostComments postId={post.id} previewComments={post.previewComments} totalComments={post.totalComments}/>
 		</div>
 	);
 }

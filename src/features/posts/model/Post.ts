@@ -1,4 +1,5 @@
 import type { PostLike } from "@/features/posts/model/PostLikes.ts";
+import type { Comment } from "@/features/comments/model/Comment.ts";
 
 export interface Post {
 	id: number;
@@ -10,4 +11,6 @@ export interface Post {
 	updated: string;
 	isDeleted: boolean;
 	createdBy: string;
+	previewComments: Comment[];
+	totalComments: number;
 }
