@@ -12,7 +12,7 @@ export function usePostsQuery(page: number, limit: number, searchParams: PostSea
 		queryKey: ['posts', page, limit, searchParams],
 		queryFn: async () => {
 			const response = await http.post<ApiResponse<PaginationResponse<Post>>>(
-				`/posts/search?page=${page - 1}&limit=${limit}`,
+				`/posts/search?page=${page - 1}&limit=${limit}&includeComments=true`,
 				searchParams
 			);
 			return response.data.payload;
@@ -42,6 +42,33 @@ export function useUpdatePostMutation() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: ['posts']});
 			toast.success('Post successfully updated');
+		},
+	});
+}
+
+
+export function useLikePostMutation() {
+	return useMutation({
+		mutationFn: async (postId: number) => {
+			const response = await http.post<ApiResponse<Post>>(`/posts/${postId}/like`);
+			return response.data.payload;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['posts'] });
+			toast.success('Post successfully liked');
+		},
+	});
+}
+
+export function useUnlikePostMutation() {
+	return useMutation({
+		mutationFn: async (postId: number) => {
+			const response = await http.delete<ApiResponse<Post>>(`/posts/${postId}/like`);
+			return response.data.payload;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ['posts'] });
+			toast.success('Post successfully unliked');
 		},
 	});
 }
