@@ -4,17 +4,25 @@ import { queryClient } from '@/app/api/queryClient';
 import { toast } from 'sonner';
 import type { ApiResponse } from '@/features/auth/model/Auth';
 import type { Post } from '@/features/posts/model/Post';
-import type { PaginationResponse } from '@/shared/model/Pagination';
+import type {  PaginationResponse, RequestPagination } from '@/shared/model/Pagination';
 import type { PostSearchRequest } from '@/features/posts/model/PostSearch';
 import { postQueryKeys } from '@/features/posts/store/postQueryKeys';
+import type { WithExtra } from "@/shared/type/with-extra.type.ts";
 
-export function usePostsQuery(page: number, limit: number, searchParams: PostSearchRequest) {
+export function usePostsQuery({ page, limit, ...otherParams }: WithExtra<RequestPagination>, searchParams: PostSearchRequest) {
 	return useQuery({
 		queryKey: postQueryKeys.list(page, limit, searchParams),
 		queryFn: async () => {
 			const response = await http.post<ApiResponse<PaginationResponse<Post>>>(
 				`/posts/search?page=${page - 1}&limit=${limit}`,
-				searchParams
+				searchParams,
+				{
+					params: {
+						page: page - 1,
+						limit,
+						...otherParams
+					}
+				}
 			);
 			return response.data.payload;
 		},

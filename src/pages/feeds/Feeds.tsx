@@ -24,7 +24,7 @@ export default function Feeds() {
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 	const [searchParams, setSearchParams] = useState<PostSearchRequest>({});
 
-	const { data, isFetching, isLoading } = usePostsQuery(page, limit, searchParams);
+	const { data, isFetching, isLoading } = usePostsQuery({ page, limit, includeComments: true }, { ...searchParams });
 	const updatePostMutation = useUpdatePostMutation();
 	const createPostMutation = useCreatePostMutation();
 

@@ -13,6 +13,7 @@ export interface PostSearchRequest {
   deleted?: boolean;
   keyword?: string;
   sortField?: PostSortField;
+  includeComments?: boolean
 }
 
 export interface PostSearchFormValues {

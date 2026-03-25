@@ -1,7 +1,7 @@
-import {http} from '@/app/api/http';
-import type {ApiResponse} from '@/features/auth/model/Auth';
-import type {PaginationResponse} from '@/shared/model/Pagination';
-import type {Comment} from '@/features/comments/model/Comment';
+import { http } from '@/app/api/http';
+import type { ApiResponse } from '@/features/auth/model/Auth';
+import type { PaginationResponse } from '@/shared/model/Pagination';
+import type { Comment } from '@/features/comments/model/Comment';
 
 export type CommentPage = PaginationResponse<Comment>;
 

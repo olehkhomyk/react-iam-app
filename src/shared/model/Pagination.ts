@@ -9,3 +9,8 @@ export interface Pagination {
     page: number;
     pages: number;
 }
+
+export interface RequestPagination {
+    limit: number;
+    page: number;
+}
