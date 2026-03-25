@@ -27,7 +27,6 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 	const [isLiked, setIsLiked] = useState(false);
 	const [likeCount, setLikeCount] = useState(post.likesCount);
 	const [isExpanded, setIsExpanded] = useState(false);
-	const [showComments, setShowComments] = useState(false);
 
 	const CONTENT_PREVIEW_LENGTH = 200;
 	const shouldShowReadMore = post.content.length > CONTENT_PREVIEW_LENGTH;
@@ -150,18 +149,14 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 								<Heart className={`w-4 h-4 mr-2 ${isLiked ? 'fill-current' : ''}`}/>
 								<span className="text-sm font-medium">{likeCount}</span>
 							</Button>
-							<Button
-								variant={showComments ? 'secondary' : 'ghost'}
-								size="sm"
-								onClick={() => {
-									setShowComments(v => !v);
-									onComment?.(post.id);
-								}}
-								className="h-9 px-3 text-gray-600 hover:text-gray-900"
-							>
-								<MessageCircle className={`w-4 h-4 mr-2 ${showComments ? 'fill-current' : ''}`}/>
-								<span className="text-sm font-medium">Comments</span>
-							</Button>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="h-9 px-3 text-gray-600 cursor-default pointer-events-none"
+						>
+							<MessageCircle className="w-4 h-4 mr-2"/>
+							<span className="text-sm font-medium">Comments ({post.totalComments})</span>
+						</Button>
 							<Button
 								variant="ghost"
 								size="sm"
@@ -175,7 +170,7 @@ export function PostCard({post, onLike, onComment, onShare, actions = []}: PostC
 					</div>
 				</div>
 			</div>
-			{showComments && <PostComments postId={post.id}/>}
+			<PostComments postId={post.id} previewComments={post.previewComments} totalComments={post.totalComments}/>
 		</div>
 	);
 }
