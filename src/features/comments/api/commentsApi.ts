@@ -20,3 +20,13 @@ export async function addComment(postId: number, content: string): Promise<Comme
 	);
 	return res.data.payload;
 }
+
+export async function likeComment(postId: number, commentId: number): Promise<Comment> {
+	const res = await http.post<ApiResponse<Comment>>(`/posts/${postId}/comments/${commentId}/like`);
+	return res.data.payload;
+}
+
+export async function unlikeComment(postId: number, commentId: number): Promise<Comment> {
+	const res = await http.delete<ApiResponse<Comment>>(`/posts/${postId}/comments/${commentId}/like`);
+	return res.data.payload;
+}

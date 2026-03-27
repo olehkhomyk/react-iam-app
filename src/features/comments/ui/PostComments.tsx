@@ -1,14 +1,16 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { flatMap, take } from 'lodash';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Spinner } from '@/components/ui/spinner';
-import { Send } from 'lucide-react';
+import { Send, Heart } from 'lucide-react';
 import type { Comment } from '@/features/comments/model/Comment';
 import { getInitials, formatDate } from '@/features/posts/ui/utils';
 import { useAuth } from '@/features/auth/context/useAuth';
 import { useInfiniteCommentsQuery, useAddCommentMutation } from '@/features/posts/store/PostCommentsStore';
+import { useLikeCommentMutation, useUnlikeCommentMutation } from '@/features/comments/store/CommentLikesStore';
+import { isCommentLiked } from '@/shared/helper/comment-like.helper';
 
 const PREVIEW_COUNT = 3;
 
@@ -16,9 +18,43 @@ interface PostCommentsProps {
 	postId: number;
 	previewComments: Comment[];
 	totalComments: number;
+	showLikes?: boolean;
 }
 
-function CommentItem({ comment }: { comment: Comment }) {
+interface CommentItemProps {
+	comment: Comment;
+	postId: number;
+	currentUserId: number;
+	showLikes: boolean;
+}
+
+function CommentItem({ comment, postId, currentUserId, showLikes }: CommentItemProps) {
+	const likedByServer = isCommentLiked(comment, currentUserId);
+	const [isLikeInPending, setIsLikeInPending] = useState(false);
+
+	const isLiked = isLikeInPending ? !likedByServer : likedByServer;
+	const likeCount = isLikeInPending
+		? comment.likesCount + (likedByServer ? -1 : 1)
+		: comment.likesCount;
+
+	const likeCommentMutation = useLikeCommentMutation(postId);
+	const unlikeCommentMutation = useUnlikeCommentMutation(postId);
+
+	useEffect(() => {
+		// eslint-disable-next-line react-hooks/set-state-in-effect
+		setIsLikeInPending(false);
+	}, [likedByServer]);
+
+	const handleLike = async () => {
+		if (isLikeInPending) return;
+		setIsLikeInPending(true);
+		if (likedByServer) {
+			await unlikeCommentMutation.mutateAsync(comment.id);
+		} else {
+			await likeCommentMutation.mutateAsync(comment.id);
+		}
+	};
+
 	return (
 		<div className="flex gap-3">
 			<Avatar className="h-8 w-8 flex-shrink-0 ring-1 ring-white shadow-sm">
@@ -32,7 +68,20 @@ function CommentItem({ comment }: { comment: Comment }) {
 					<p className="text-xs font-semibold text-gray-900 mb-0.5">{comment.createdBy}</p>
 					<p className="text-sm text-gray-700 leading-relaxed">{comment.content}</p>
 				</div>
-				<p className="text-xs text-gray-400 mt-1 pl-1">{formatDate(comment.createdAt)}</p>
+				<div className="flex items-center justify-between mt-1 pl-1">
+					<p className="text-xs text-gray-400">{formatDate(comment.createdAt)}</p>
+					{showLikes && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={handleLike}
+							className={`h-6 px-2 gap-1 text-xs ${isLiked ? 'text-red-600 hover:text-red-700' : 'text-gray-400 hover:text-gray-600'}`}
+						>
+							<Heart className={`w-3 h-3 ${isLiked ? 'fill-current' : ''}`}/>
+							{likeCount > 0 && <span>{likeCount}</span>}
+						</Button>
+					)}
+				</div>
 			</div>
 		</div>
 	);
@@ -49,7 +98,7 @@ function CommentAvatar(user: string) {
 	);
 }
 
-export function PostComments({ postId, previewComments: rawPreview, totalComments = 0 }: PostCommentsProps) {
+export function PostComments({ postId, previewComments: rawPreview, totalComments = 0, showLikes = false }: PostCommentsProps) {
 	const { user } = useAuth();
 	const currentUser = user?.username ?? 'me';
 
@@ -129,7 +178,7 @@ export function PostComments({ postId, previewComments: rawPreview, totalComment
 				<div className="space-y-3">
 					{
 						displayedComments.map(comment => (
-							<CommentItem key={comment.id} comment={comment}/>
+							<CommentItem key={comment.id} comment={comment} postId={postId} currentUserId={user!.id} showLikes={showLikes}/>
 						))
 					}
 					{
