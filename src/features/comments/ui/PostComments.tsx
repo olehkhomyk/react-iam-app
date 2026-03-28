@@ -29,13 +29,13 @@ interface CommentItemProps {
 }
 
 function CommentItem({ comment, postId, currentUserId, showLikes }: CommentItemProps) {
-	const likedByServer = isCommentLiked(comment, currentUserId);
+	const likedByServer = comment.likes != null ? isCommentLiked(comment, currentUserId) : false;
 	const [isLikeInPending, setIsLikeInPending] = useState(false);
 
 	const isLiked = isLikeInPending ? !likedByServer : likedByServer;
 	const likeCount = isLikeInPending
-		? comment.likesCount + (likedByServer ? -1 : 1)
-		: comment.likesCount;
+		? (comment.likesCount ?? 0) + (likedByServer ? -1 : 1)
+		: (comment.likesCount ?? 0);
 
 	const likeCommentMutation = useLikeCommentMutation(postId);
 	const unlikeCommentMutation = useUnlikeCommentMutation(postId);
@@ -70,7 +70,7 @@ function CommentItem({ comment, postId, currentUserId, showLikes }: CommentItemP
 				</div>
 				<div className="flex items-center justify-between mt-1 pl-1">
 					<p className="text-xs text-gray-400">{formatDate(comment.createdAt)}</p>
-					{showLikes && (
+					{showLikes && comment.likes != null && comment.likesCount != null && (
 						<Button
 							variant="ghost"
 							size="sm"
@@ -98,7 +98,7 @@ function CommentAvatar(user: string) {
 	);
 }
 
-export function PostComments({ postId, previewComments: rawPreview, totalComments = 0, showLikes = false }: PostCommentsProps) {
+export function PostComments({ postId, previewComments: rawPreview, totalComments = 0, showLikes = true }: PostCommentsProps) {
 	const { user } = useAuth();
 	const currentUser = user?.username ?? 'me';
 
