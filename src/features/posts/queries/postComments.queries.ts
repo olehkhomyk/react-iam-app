@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
 import { queryClient } from '@/app/api/queryClient';
-import { fetchComments, addComment } from '@/features/comments/api/commentsApi';
-import { postQueryKeys } from '@/features/posts/store/postQueryKeys';
+import { fetchPostComments, addPostComment } from '@/features/post-comments/api/comments.api.ts';
+import { postQueryKeys } from '@/features/posts/queries/postQuery.keys.ts';
 import { sumBy } from 'lodash';
 
 const LOAD_MORE_LIMIT = 5;
@@ -9,7 +9,7 @@ const LOAD_MORE_LIMIT = 5;
 export function useInfiniteCommentsQuery(postId: number, enabled: boolean) {
 	return useInfiniteQuery({
 		queryKey: postQueryKeys.comments(postId),
-		queryFn: ({ pageParam }) => fetchComments(postId, pageParam, LOAD_MORE_LIMIT),
+		queryFn: ({ pageParam }) => fetchPostComments(postId, pageParam, LOAD_MORE_LIMIT),
 		initialPageParam: 0,
 		getNextPageParam: (lastPage, _allPages, lastPageParam) => {
 			const totalFetched = sumBy(_allPages, p => p.content.length);
@@ -22,7 +22,7 @@ export function useInfiniteCommentsQuery(postId: number, enabled: boolean) {
 
 export function useAddCommentMutation(postId: number) {
 	return useMutation({
-		mutationFn: (content: string) => addComment(postId, content),
+		mutationFn: (content: string) => addPostComment(postId, content),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
 		},

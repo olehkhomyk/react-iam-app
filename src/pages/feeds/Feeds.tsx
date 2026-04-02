@@ -1,17 +1,17 @@
 import { useState, useMemo } from 'react';
-import type { Post } from '@/features/posts/model/Post';
-import type { PostSearchFormValues, PostSearchRequest } from '@/features/posts/model/PostSearch';
+import type { PostTypes } from '@/features/posts/model/post.types.ts';
+import type { PostSearchFormValues, PostSearchRequest } from '@/features/posts/model/postSearch.types.ts';
 import {
 	usePostsQuery, useUpdatePostMutation, useCreatePostMutation
-} from '@/features/posts/store/PostStore.ts';
+} from '@/features/posts/queries/post.queries.ts';
 import { PostList } from '@/features/posts/ui/PostList';
 import { PostActions } from '@/features/posts/ui/PostActions';
 import { PostSearchForm } from '@/features/posts/ui/PostSearchForm';
-import { UpdatePostDialog } from '@/features/posts/ui/UpdatePostDialog';
-import { CreatePostDialog } from '@/features/posts/ui/CreatePostDialog';
+import { PostUpdateDialog } from '@/features/posts/ui/PostUpdateDialog.tsx';
+import { PostCreateDialog } from '@/features/posts/ui/PostCreateDialog.tsx';
 import { Button } from '@/components/ui/button';
 import { DynamicPagination } from '@/shared/ui/dynamic-pagination/DynamicPagination';
-import { useAuth } from '@/features/auth/context/useAuth';
+import { useAuth } from '@/features/auth/context/useAuth.ts';
 import { toast } from 'sonner';
 
 export default function Feeds() {
@@ -19,7 +19,7 @@ export default function Feeds() {
 
 	const [page, setPage] = useState(1);
 	const limit = 5;
-	const [editingPost, setEditingPost] = useState<Post | null>(null);
+	const [editingPost, setEditingPost] = useState<PostTypes | null>(null);
 	const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 	const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 	const [searchParams, setSearchParams] = useState<PostSearchRequest>({});
@@ -36,17 +36,17 @@ export default function Feeds() {
 		// TODO: Implement share functionality
 	};
 
-	const handleEdit = (post: Post) => {
+	const handleEdit = (post: PostTypes) => {
 		setEditingPost(post);
 		setIsEditDialogOpen(true);
 	};
 
-	const handleDelete = (post: Post) => {
+	const handleDelete = (post: PostTypes) => {
 		console.log('Delete post:', post.id);
 		toast.info('Delete functionality coming soon');
 	};
 
-	const handleReport = (post: Post) => {
+	const handleReport = (post: PostTypes) => {
 		console.log('Report post:', post.id);
 		toast.info('Report functionality coming soon');
 	};
@@ -68,8 +68,8 @@ export default function Feeds() {
 	};
 
 	const postActions = useMemo(() => [
-		PostActions.edit(handleEdit, (post: Post) => post.createdBy === user?.username),
-		PostActions.delete(handleDelete, (post: Post) => post.createdBy === user?.username),
+		PostActions.edit(handleEdit, (post: PostTypes) => post.createdBy === user?.username),
+		PostActions.delete(handleDelete, (post: PostTypes) => post.createdBy === user?.username),
 		PostActions.report(handleReport),
 	], [user]);
 
@@ -111,7 +111,7 @@ export default function Feeds() {
 			</main>
 
 			{editingPost && (
-				<UpdatePostDialog
+				<PostUpdateDialog
 					post={editingPost}
 					open={isEditDialogOpen}
 					onOpenChange={setIsEditDialogOpen}
@@ -120,7 +120,7 @@ export default function Feeds() {
 			)}
 
 			{isCreateDialogOpen && (
-				<CreatePostDialog
+				<PostCreateDialog
 					open={isCreateDialogOpen}
 					onOpenChange={setIsCreateDialogOpen}
 					onCreate={handleCreate}

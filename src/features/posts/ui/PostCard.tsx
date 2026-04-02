@@ -9,17 +9,17 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { Post } from '@/features/posts/model/Post';
-import { getInitials, formatDate } from './utils';
+import type { PostTypes } from '@/features/posts/model/post.types.ts';
+import { getInitials, formatDate } from '../utils/utils.ts';
 import { ImageZoom } from '@/shared/ui/image-zoom/ImageZoom';
-import type { PostAction } from './types';
-import { PostComments } from '@/features/comments/ui/PostComments';
+import type { PostAction } from '../model/postAction.types.ts';
+import { PostComments } from '@/features/post-comments/ui/PostComments';
 import { isPostLiked } from '@/shared/helper/post-like.helper.ts';
 import { useAuth } from '@/features/auth/context/useAuth.ts';
-import { useLikePostMutation, useUnlikePostMutation } from '@/features/posts/store/PostLikesStore.ts';
+import { useLikePostMutation, useUnlikePostMutation } from '@/features/posts/queries/postLikes.queries.ts';
 
 interface PostCardProps {
-	post: Post;
+	post: PostTypes;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }
@@ -82,7 +82,7 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
 					</div>
 				</div>
 
-				{/* Post Content */}
+				{/* PostTypes Content */}
 				<div className="flex-1 min-w-0">
 					{/* Header with Avatar */}
 					<div className="flex items-start justify-between mb-3">

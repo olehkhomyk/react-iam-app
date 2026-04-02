@@ -18,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PostSortField, type PostSearchFormValues } from "@/features/posts/model/PostSearch";
+import { PostSortField, type PostSearchFormValues } from "@/features/posts/model/postSearch.types.ts";
 
 const searchFormSchema = z.object({
   keyword: z.string(),

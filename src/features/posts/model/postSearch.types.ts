@@ -20,3 +20,10 @@ export interface PostSearchFormValues {
   keyword: string;
   sortField: PostSortField | "";
 }
+
+export interface SearchPostsParams {
+  page: number;
+  limit: number;
+  searchParams: PostSearchRequest;
+  params?: Record<string, unknown>;
+}

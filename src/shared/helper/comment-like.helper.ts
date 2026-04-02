@@ -1,6 +1,6 @@
-import type { Comment } from '@/features/comments/model/Comment';
+import type { PostComment } from '@/features/post-comments/model/postComment.ts';
 import { some } from 'lodash';
 
-export function isCommentLiked(comment: Comment, userId: number): boolean {
+export function isCommentLiked(comment: PostComment, userId: number): boolean {
 	return some(comment.likes, { userId });
 }

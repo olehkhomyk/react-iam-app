@@ -1,13 +1,13 @@
 import React, { useCallback, useEffect, useMemo } from "react";
 import { authTokens } from "@/shared/lib/authTokens.ts";
-import { AuthContext } from "../context/AuthContext.ts";
+import { AuthContext } from "./AuthContext.ts";
 import {
 	useUserQuery, useLoginMutation, useRegisterMutation, useLogoutMutation, AUTH_QUERY_KEY
-} from "../store/auth.queries.ts";
+} from "@/features/auth/queries/auth.queries.ts";
 import { queryClient } from "@/app/api/queryClient.ts";
 import { AUTH_EVENTS, authEventEmitter } from "@/shared/lib/authEventEmitter.ts";
 import { Spinner } from "@/components/ui/spinner.tsx";
-import type { LoginRequest, RegisterRequest } from "../model/AuthRequest.ts";
+import type { LoginRequest, RegisterRequest } from "../model/auth.types.ts";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const { data: user, isLoading: isUserLoading } = useUserQuery();

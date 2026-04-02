@@ -22,7 +22,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { Post } from "@/features/posts/model/Post";
+import type { PostTypes } from "@/features/posts/model/post.types.ts";
 
 const postFormSchema = z.object({
   title: z
@@ -38,7 +38,7 @@ const postFormSchema = z.object({
 type PostFormValues = z.infer<typeof postFormSchema>;
 
 interface UpdatePostFormProps {
-  post?: Post;
+  post?: PostTypes;
   onSubmit: (values: PostFormValues) => void | Promise<void>;
   onCancel?: () => void;
   isLoading?: boolean;
@@ -46,7 +46,7 @@ interface UpdatePostFormProps {
   formRef?: RefObject<HTMLFormElement | null>;
 }
 
-export function UpdatePostForm({
+export function PostUpdateForm({
   post,
   onSubmit,
   onCancel,
@@ -191,9 +191,9 @@ export function UpdatePostForm({
                     <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
                   </>
                 ) : post ? (
-                  "Update Post"
+                  "Update PostTypes"
                 ) : (
-                  "Create Post"
+                  "Create PostTypes"
                 )}
               </Button>
             </div>
@@ -211,7 +211,7 @@ export function UpdatePostForm({
     <Card className="w-full max-w-2xl mx-auto shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">
-          {post ? "Update Post" : "Create New Post"}
+          {post ? "Update PostTypes" : "Create New PostTypes"}
         </CardTitle>
         <CardDescription>
           {post

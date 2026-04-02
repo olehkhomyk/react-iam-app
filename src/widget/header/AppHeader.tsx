@@ -7,7 +7,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "@/features/auth/context/useAuth";
+import { useAuth } from "@/features/auth/context/useAuth.ts";
 import { Link, useNavigate } from "react-router-dom";
 
 export function AppHeader() {

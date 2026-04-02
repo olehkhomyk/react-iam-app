@@ -8,17 +8,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UpdatePostForm } from "./UpdatePostForm";
-import type { Post } from "@/features/posts/model/Post";
+import { PostUpdateForm } from "./PostUpdateForm.tsx";
+import type { PostTypes } from "@/features/posts/model/post.types.ts";
 
 interface UpdatePostDialogProps {
-  post: Post;
+  post: PostTypes;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onUpdate?: (postId: number, values: { title: string; content: string }) => void | Promise<void>;
 }
 
-export function UpdatePostDialog({
+export function PostUpdateDialog({
   post,
   open,
   onOpenChange,
@@ -53,7 +53,7 @@ export function UpdatePostDialog({
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto px-6 py-6 min-h-0">
-          <UpdatePostForm
+          <PostUpdateForm
             post={post}
             onSubmit={handleSubmit}
             isLoading={isLoading}
@@ -84,7 +84,7 @@ export function UpdatePostDialog({
                 <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
               </>
             ) : (
-              "Update Post"
+              "Update PostTypes"
             )}
           </Button>
         </div>

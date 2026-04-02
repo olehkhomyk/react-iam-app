@@ -1,15 +1,15 @@
 import {Edit, Trash2, Flag, Share2, Bookmark} from 'lucide-react';
-import type {Post} from '@/features/posts/model/Post';
-import type {PostAction} from './types';
+import type {PostTypes} from '@/features/posts/model/post.types.ts';
+import type {PostAction} from '../model/postAction.types.ts';
 
 export function createPostAction(
 	id: string,
 	label: string,
 	icon: typeof Edit,
-	onClick: (post: Post) => void,
+	onClick: (post: PostTypes) => void,
 	options?: {
 		variant?: 'default' | 'destructive';
-		show?: (post: Post) => boolean;
+		show?: (post: PostTypes) => boolean;
 	}
 ): PostAction {
 	return {
@@ -23,21 +23,21 @@ export function createPostAction(
 }
 
 export const PostActions = {
-	edit: (onClick: (post: Post) => void, canEdit?: (post: Post) => boolean): PostAction =>
-		createPostAction('edit', 'Edit Post', Edit, onClick, {show: canEdit}),
+	edit: (onClick: (post: PostTypes) => void, canEdit?: (post: PostTypes) => boolean): PostAction =>
+		createPostAction('edit', 'Edit PostTypes', Edit, onClick, {show: canEdit}),
 
-	delete: (onClick: (post: Post) => void, canDelete?: (post: Post) => boolean): PostAction =>
-		createPostAction('delete', 'Delete Post', Trash2, onClick, {
+	delete: (onClick: (post: PostTypes) => void, canDelete?: (post: PostTypes) => boolean): PostAction =>
+		createPostAction('delete', 'Delete PostTypes', Trash2, onClick, {
 			variant: 'destructive',
 			show: canDelete,
 		}),
 
-	report: (onClick: (post: Post) => void): PostAction =>
-		createPostAction('report', 'Report Post', Flag, onClick),
+	report: (onClick: (post: PostTypes) => void): PostAction =>
+		createPostAction('report', 'Report PostTypes', Flag, onClick),
 
-	share: (onClick: (post: Post) => void): PostAction =>
-		createPostAction('share', 'Share Post', Share2, onClick),
+	share: (onClick: (post: PostTypes) => void): PostAction =>
+		createPostAction('share', 'Share PostTypes', Share2, onClick),
 
-	bookmark: (onClick: (post: Post) => void): PostAction =>
-		createPostAction('bookmark', 'Save Post', Bookmark, onClick),
+	bookmark: (onClick: (post: PostTypes) => void): PostAction =>
+		createPostAction('bookmark', 'Save PostTypes', Bookmark, onClick),
 };

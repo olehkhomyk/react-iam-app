@@ -19,6 +19,20 @@ export interface UserProfile {
     roles: Role[];
 }
 
+export interface LoginRequest {
+    email: string;
+    password: string;
+}
+
+export interface RegisterRequest {
+    email: string;
+    password: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    confirmPassword: string;
+}
+
 export interface TokenResponse {
     token: string;
     refreshToken: string;

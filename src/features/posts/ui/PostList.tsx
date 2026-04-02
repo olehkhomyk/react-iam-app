@@ -1,12 +1,12 @@
-import type { Post } from '@/features/posts/model/Post';
-import type { PostAction } from './types';
+import type { PostTypes } from '@/features/posts/model/post.types.ts';
+import type { PostAction } from '../model/postAction.types.ts';
 import { PostCard } from './PostCard';
 import { Spinner } from '@/components/ui/spinner';
 
 interface PostListProps {
-	posts: Post[];
+	posts: PostTypes[];
 	loading?: boolean;
-	onLike?: (post: Post, isLiked: boolean) => void;
+	onLike?: (post: PostTypes, isLiked: boolean) => void;
 	onShare?: (postId: number) => void;
 	actions?: PostAction[];
 }

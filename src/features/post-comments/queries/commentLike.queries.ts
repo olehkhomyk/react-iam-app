@@ -1,11 +1,11 @@
 import { useMutation } from '@tanstack/react-query';
 import { queryClient } from '@/app/api/queryClient';
-import { postQueryKeys } from '@/features/posts/store/postQueryKeys';
-import { likeComment, unlikeComment } from '@/features/comments/api/commentsApi';
+import { postQueryKeys } from '@/features/posts/queries/postQuery.keys.ts';
+import { likePostComment, unlikePostComment } from '@/features/post-comments/api/comments.api.ts';
 
-export function useLikeCommentMutation(postId: number) {
+export function useLikePostCommentMutation(postId: number) {
 	return useMutation({
-		mutationFn: (commentId: number) => likeComment(postId, commentId),
+		mutationFn: (commentId: number) => likePostComment(postId, commentId),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
 			queryClient.invalidateQueries({ queryKey: postQueryKeys.all() });
@@ -13,9 +13,9 @@ export function useLikeCommentMutation(postId: number) {
 	});
 }
 
-export function useUnlikeCommentMutation(postId: number) {
+export function useUnlikePostCommentMutation(postId: number) {
 	return useMutation({
-		mutationFn: (commentId: number) => unlikeComment(postId, commentId),
+		mutationFn: (commentId: number) => unlikePostComment(postId, commentId),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
 			queryClient.invalidateQueries({ queryKey: postQueryKeys.all() });

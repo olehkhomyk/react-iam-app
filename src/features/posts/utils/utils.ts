@@ -1,7 +1,7 @@
 import moment from 'moment';
 
-export const getInitials = (name: string) => {
-	return name
+export const getInitials = (username: string) => {
+	return username
 		.split(' ')
 		.map(word => word.charAt(0))
 		.join('')

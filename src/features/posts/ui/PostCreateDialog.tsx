@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { UpdatePostForm } from "./UpdatePostForm";
+import { PostUpdateForm } from "./PostUpdateForm.tsx";
 
 interface CreatePostDialogProps {
 	open: boolean;
@@ -16,7 +16,7 @@ interface CreatePostDialogProps {
 	onCreate?: (values: { title: string; content: string }) => void | Promise<void>;
 }
 
-export function CreatePostDialog({
+export function PostCreateDialog({
 	                                 open,
 	                                 onOpenChange,
 	                                 onCreate,
@@ -49,7 +49,7 @@ export function CreatePostDialog({
 				</DialogHeader>
 
 				<div className="flex-1 overflow-y-auto px-6 py-6 min-h-0">
-					<UpdatePostForm
+					<PostUpdateForm
 						onSubmit={handleSubmit}
 						isLoading={isLoading}
 						renderInDialog={true}
@@ -76,7 +76,7 @@ export function CreatePostDialog({
 								<div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"/>
 							</>
 						) : (
-							"Create Post"
+							"Create PostTypes"
 						)}
 					</Button>
 				</div>

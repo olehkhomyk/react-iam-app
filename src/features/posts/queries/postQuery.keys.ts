@@ -1,4 +1,4 @@
-import type { PostSearchRequest } from '@/features/posts/model/PostSearch';
+import type { PostSearchRequest } from '@/features/posts/model/postSearch.types.ts';
 
 export const postQueryKeys = {
 	all: () => ['posts'] as const,
@@ -8,3 +8,4 @@ export const postQueryKeys = {
 	comments: (postId: number) => ['comments', postId] as const,
 	commentsPage: (postId: number, page: number) => ['comments', postId, page] as const,
 };
+
