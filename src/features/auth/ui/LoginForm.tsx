@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { loginSchema, type LoginFormData } from "@/features/auth/model/LoginForm.ts";
+import { type LoginFormData, loginSchema } from "@/features/auth/model/auth.schemas.ts";
 
 type LoginFormProps = {
   onSubmit: (data: LoginFormData) => Promise<void> | void;

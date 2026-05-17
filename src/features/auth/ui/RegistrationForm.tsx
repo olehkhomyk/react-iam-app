@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { registrationSchema, type RegistrationFormData } from "@/features/auth/model/RegistrationForm.ts";
+import { type RegistrationFormData, registrationSchema } from "@/features/auth/model/auth.schemas.ts";
 
 type RegistrationFormProps = {
   onSubmit: (data: RegistrationFormData) => Promise<void> | void;

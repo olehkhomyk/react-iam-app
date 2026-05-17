@@ -1,8 +1,8 @@
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "@/features/auth/context/useAuth.ts";
-import type { LoginFormData } from "@/features/auth/model/LoginForm.ts";
 import { LoginForm } from "@/features/auth/ui/LoginForm";
+import type { LoginFormData } from "@/features/auth/model/auth.schemas.ts";
 
 export default function Login() {
   const navigate = useNavigate();

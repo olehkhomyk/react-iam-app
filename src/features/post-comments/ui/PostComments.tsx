@@ -55,7 +55,9 @@ export function PostComments({ postId, previewComments: rawPreview, totalComment
 		const trimmed = commentText.trim();
 		if (!trimmed || addCommentMutation.isPending) return;
 		addCommentMutation.mutate(trimmed, {
-			onSuccess: () => setCommentText(''),
+			onSuccess: () => {
+				setCommentText('');
+			},
 		});
 	};
 
