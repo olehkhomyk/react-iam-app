@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCurrentUser, login as apiLogin, register as apiRegister } from "../api/auth.api.ts";
 import { authTokens } from "@/shared/lib/authTokens.ts";
-import type { LoginRequest, RegisterRequest } from "../model/AuthRequest.ts";
+import type { LoginRequest, RegisterRequest } from "@/features/auth/model/auth.types.ts";
 
 export const AUTH_QUERY_KEY = ["auth", "me"] as const;
 
@@ -19,7 +19,7 @@ export function useUserQuery() {
 
 export function useLoginMutation() {
 	const queryClient = useQueryClient();
-	
+
 	return useMutation({
 		mutationFn: async (credentials: LoginRequest) => {
 			const tokens = await apiLogin(credentials);

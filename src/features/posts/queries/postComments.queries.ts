@@ -1,5 +1,4 @@
 import { useInfiniteQuery, useMutation } from '@tanstack/react-query';
-import { queryClient } from '@/app/api/queryClient';
 import { fetchPostComments, addPostComment } from '@/features/post-comments/api/comments.api.ts';
 import { postQueryKeys } from '@/features/posts/queries/postQuery.keys.ts';
 import { sumBy } from 'lodash';
@@ -22,9 +21,6 @@ export function useInfiniteCommentsQuery(postId: number, enabled: boolean) {
 
 export function useAddCommentMutation(postId: number) {
 	return useMutation({
-		mutationFn: (content: string) => addPostComment(postId, content),
-		onSuccess: () => {
-			queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
-		},
+		mutationFn: (content: string) => addPostComment(postId, content)
 	});
 }

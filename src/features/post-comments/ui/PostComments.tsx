@@ -9,6 +9,8 @@ import type { PostComment } from '@/features/post-comments/model/postComment.ts'
 import { PostCommentAvatar } from '@/features/post-comments/ui/PostCommentAvatar';
 import { useInfiniteCommentsQuery, useAddCommentMutation } from '@/features/posts/queries/postComments.queries.ts';
 import { PostCommentItem } from '@/features/post-comments/ui/PostCommentItem';
+import { queryClient } from "@/app/api/queryClient.ts";
+import { postQueryKeys } from "@/features/posts/queries/postQuery.keys.ts";
 
 const PREVIEW_COUNT = 3;
 
@@ -56,6 +58,11 @@ export function PostComments({ postId, previewComments: rawPreview, totalComment
 		if (!trimmed || addCommentMutation.isPending) return;
 		addCommentMutation.mutate(trimmed, {
 			onSuccess: () => {
+				if (hasFetched) {
+					queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
+				} else {
+					queryClient.invalidateQueries({ queryKey: postQueryKeys.all() });
+				}
 				setCommentText('');
 			},
 		});

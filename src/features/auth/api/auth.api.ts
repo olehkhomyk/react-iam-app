@@ -1,7 +1,13 @@
 import { http } from '@/app/api/http.ts';
 import { authTokens } from '@/shared/lib/authTokens.ts';
-import type { AuthResponse, UserResponse, TokenResponse, UserProfile } from '../model/auth.types.ts';
-import type { LoginRequest, RegisterRequest } from '@/features/auth/model/AuthRequest.ts';
+import type {
+    AuthResponse,
+    UserResponse,
+    TokenResponse,
+    UserProfile,
+    LoginRequest,
+    RegisterRequest
+} from '../model/auth.types.ts';
 
 /**
  * Login user with email and password

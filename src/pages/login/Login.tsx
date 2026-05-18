@@ -1,5 +1,4 @@
 import { useNavigate, Link } from "react-router-dom";
-import { toast } from "sonner";
 import { useAuth } from "@/features/auth/context/useAuth.ts";
 import { LoginForm } from "@/features/auth/ui/LoginForm";
 import type { LoginFormData } from "@/features/auth/model/auth.schemas.ts";
@@ -10,7 +9,6 @@ export default function Login() {
 
   const onSubmit = async (data: LoginFormData) => {
     await login({ email: data.email, password: data.password });
-    toast.success("Login successful!");
     navigate("/feeds");
   };
 
