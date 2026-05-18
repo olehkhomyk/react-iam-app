@@ -37,7 +37,7 @@ export function PostComments({
 	const [expanded, setExpanded] = useState(false);
 	const [commentText, setCommentText] = useState("");
 
-	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteCommentsQuery(postId, expanded || useInternalComments);
+	const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteCommentsQuery(postId, useInternalComments);
 	const addCommentMutation = useAddCommentMutation(postId);
 
 	const commentsData = useMemo(() => {
@@ -55,9 +55,16 @@ export function PostComments({
 		canLoadMore = expanded ? hasNextPage : totalComments > PREVIEW_COUNT;
 	}
 
+	const markViewToUseInternalCommentsQuery = (): void =>  {
+		if (!useInternalComments) {
+			setUseInternalComments(true);
+		}
+	}
+
 	const handleLoadMore = () => {
 		if (!expanded) {
 			setExpanded(true);
+			markViewToUseInternalCommentsQuery();
 			return;
 		}
 		fetchNextPage();
@@ -73,7 +80,7 @@ export function PostComments({
 		addCommentMutation.mutate(trimmed, {
 			onSuccess: () => {
 				setCommentText("");
-				setUseInternalComments(true);
+				markViewToUseInternalCommentsQuery();
 				queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
 			},
 		});
