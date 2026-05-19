@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
@@ -39,6 +39,8 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
     : post.likesCount;
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [addedCommentsCount, setAddedCommentsCount] = useState(0);
+  const totalComments = post.totalComments + addedCommentsCount;
 
   const likePostMutation = useLikePostMutation();
   const unlikePostMutation = useUnlikePostMutation();
@@ -66,6 +68,10 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
       await likePostMutation.mutateAsync(post.id);
     }
   };
+
+  const handleCommentWasAdded = useCallback(() => {
+    setAddedCommentsCount((prev) => prev + 1);
+  }, []);
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden">
@@ -188,7 +194,7 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
               >
                 <MessageCircle className="w-4 h-4 mr-2" />
                 <span className="text-sm font-medium">
-                  Comments ({post.totalComments})
+                  Comments ({totalComments})
                 </span>
               </Button>
               <Button
@@ -209,7 +215,8 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
       <PostComments
         postId={post.id}
         initialComments={post.previewComments}
-        totalComments={post.totalComments}
+        totalComments={totalComments}
+        newCommentAdded={handleCommentWasAdded}
         readonly={false}
       />
     </div>

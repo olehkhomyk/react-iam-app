@@ -20,7 +20,7 @@ interface PostCommentsProps {
 	totalComments: number;
 	showLikes?: boolean;
 	readonly?: boolean;
-	commentsQuantityChange?: (quantity: number) => void;
+	newCommentAdded?: (comment: PostComment) => void;
 }
 
 export function PostComments({
@@ -28,7 +28,8 @@ export function PostComments({
 	                             totalComments = 0,
 	                             initialComments,
 	                             showLikes = true,
-	                             readonly = false
+	                             readonly = false,
+	                             newCommentAdded,
                              }: PostCommentsProps) {
 	const { user } = useAuth();
 	const currentUser = user?.username ?? "me";
@@ -78,10 +79,11 @@ export function PostComments({
 		const trimmed = commentText.trim();
 		if (!trimmed || addCommentMutation.isPending) return;
 		addCommentMutation.mutate(trimmed, {
-			onSuccess: () => {
+			onSuccess: (comment: PostComment) => {
 				setCommentText("");
 				markViewToUseInternalCommentsQuery();
 				queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
+				newCommentAdded?.(comment);
 			},
 		});
 	};
