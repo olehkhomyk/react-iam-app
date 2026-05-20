@@ -23,7 +23,7 @@ export function usePostsQuery({ page, limit, ...otherParams }: WithExtra<Request
 
 export function useCreatePostMutation() {
 	return useMutation({
-		mutationFn: (values: PostSavePayload) => createPost(values),
+		mutationFn: (formData: FormData) => createPost(formData),
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: postQueryKeys.all() });
 			toast.success('PostTypes successfully created');

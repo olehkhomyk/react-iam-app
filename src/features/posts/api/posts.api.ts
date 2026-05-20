@@ -25,8 +25,8 @@ export async function searchPosts({
 	return response.data.payload;
 }
 
-export async function createPost(values: PostSavePayload): Promise<PostTypes> {
-	const response = await http.post<ApiResponse<PostTypes>>('/posts', values);
+export async function createPost(formData: FormData): Promise<PostTypes> {
+	const response = await http.post<ApiResponse<PostTypes>>('/posts', formData);
 	return response.data.payload;
 }
 

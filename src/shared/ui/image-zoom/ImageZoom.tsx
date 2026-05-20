@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { Maximize2, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Maximize2, X, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 import {
   Dialog,
@@ -8,39 +9,63 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { fetchFileBlob } from "@/shared/api/files.api.ts";
 
 export type ImageZoomProps = {
-  src: string;
+  imageKey: string;
   alt?: string;
   className?: string;
-  zoomedSrc?: string;
   trigger?: "image" | "icon";
   triggerClassName?: string;
 };
 
 export function ImageZoom({
-  src,
+  imageKey,
   alt,
   className,
-  zoomedSrc,
   trigger = "image",
   triggerClassName,
 }: ImageZoomProps) {
   const [loaded, setLoaded] = useState(false);
 
+  const { data: blobUrl, isLoading } = useQuery({
+    queryKey: ["files", imageKey],
+    queryFn: () => fetchFileBlob(imageKey),
+    staleTime: 5 * 60 * 1000,
+    enabled: !!imageKey,
+  });
+
+  useEffect(() => {
+    return () => {
+      if (blobUrl) URL.revokeObjectURL(blobUrl);
+    };
+  }, [blobUrl]);
+
+  if (isLoading) {
+    return (
+      <div className={`flex items-center justify-center ${className ?? ""}`}>
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!blobUrl) {
+    return (
+      <div className={`flex items-center justify-center bg-muted rounded-lg ${className ?? ""}`}>
+        <span className="text-xs text-muted-foreground">No image</span>
+      </div>
+    );
+  }
+
   return (
     <Dialog>
       {trigger === "image" ? (
         <DialogTrigger asChild>
-          <img
-            src={src}
-            alt={alt}
-            className={className}
-          />
+          <img src={blobUrl} alt={alt} className={className} />
         </DialogTrigger>
       ) : (
         <div className="relative inline-block w-full h-full">
-          <img src={src} alt={alt} className={className} />
+          <img src={blobUrl} alt={alt} className={className} />
           <DialogTrigger asChild>
             <button
               type="button"
@@ -58,7 +83,7 @@ export function ImageZoom({
 
       <DialogContent className="!w-[80vw] !h-[80vh] !max-w-[80vw] p-0 border-0 bg-black/90" showCloseButton={false}>
         <DialogTitle className="sr-only">Image preview</DialogTitle>
-        
+
         <DialogClose asChild>
           <button className="absolute top-4 right-4 z-50 text-white/90 hover:text-white transition-colors">
             <X className="h-6 w-6" />
@@ -67,7 +92,7 @@ export function ImageZoom({
 
         <div className="flex items-center justify-center h-full w-full p-4">
           <img
-            src={zoomedSrc ?? src}
+            src={blobUrl}
             alt={alt}
             className={
               "max-w-full max-h-[calc(80vh-2rem)] object-contain transition-all duration-300 ease-in-out " +

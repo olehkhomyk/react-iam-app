@@ -80,8 +80,7 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
         <div className="relative flex-shrink-0 w-full sm:w-auto">
           <div className="h-[140px] w-full sm:w-[200px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg overflow-hidden">
             <ImageZoom
-              src={`https://picsum.photos/seed/${post.id}/400/280.jpg`}
-              zoomedSrc={`https://picsum.photos/seed/${post.id}/1200/800.jpg`}
+              imageKey={post.imageKey}
               alt={post.title}
               trigger="icon"
               className="w-full h-full object-cover rounded-lg"
