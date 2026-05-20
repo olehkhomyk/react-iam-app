@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Maximize2, X, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -35,15 +35,10 @@ export function ImageZoom({
     enabled: !!imageKey,
   });
 
-  useEffect(() => {
-    return () => {
-      if (blobUrl) URL.revokeObjectURL(blobUrl);
-    };
-  }, [blobUrl]);
 
   if (isLoading) {
     return (
-      <div className={`flex items-center justify-center ${className ?? ""}`}>
+      <div className="flex items-center justify-center w-full h-full min-h-[140px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg">
         <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
@@ -51,7 +46,7 @@ export function ImageZoom({
 
   if (!blobUrl) {
     return (
-      <div className={`flex items-center justify-center bg-muted rounded-lg ${className ?? ""}`}>
+      <div className="flex items-center justify-center w-full h-full min-h-[140px] bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg">
         <span className="text-xs text-muted-foreground">No image</span>
       </div>
     );
@@ -64,7 +59,7 @@ export function ImageZoom({
           <img src={blobUrl} alt={alt} className={className} />
         </DialogTrigger>
       ) : (
-        <div className="relative inline-block w-full h-full">
+        <div className="relative flex items-center justify-center w-full">
           <img src={blobUrl} alt={alt} className={className} />
           <DialogTrigger asChild>
             <button
@@ -90,12 +85,12 @@ export function ImageZoom({
           </button>
         </DialogClose>
 
-        <div className="flex items-center justify-center h-full w-full p-4">
+        <div className="flex items-center justify-center h-full w-full pt-12 pb-4 px-4">
           <img
             src={blobUrl}
             alt={alt}
             className={
-              "max-w-full max-h-[calc(80vh-2rem)] object-contain transition-all duration-300 ease-in-out " +
+              "max-w-full max-h-[calc(80vh-4rem)] object-contain transition-all duration-300 ease-in-out " +
               (loaded ? "scale-100 opacity-100" : "scale-95 opacity-0")
             }
             onLoad={() => setLoaded(true)}
