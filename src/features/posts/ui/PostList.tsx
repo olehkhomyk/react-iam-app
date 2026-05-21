@@ -12,24 +12,25 @@ interface PostListProps {
 }
 
 export function PostList({ posts, onShare, actions, loading = false }: PostListProps) {
-	if (posts.length === 0 && !loading) {
+	if (loading) {
 		return (
-			<div className="text-center py-12">
-				<p className="text-gray-500 text-sm">No results found</p>
+			<div className="flex items-center justify-center py-16">
+				<Spinner className="size-7 text-primary"/>
 			</div>
 		);
 	}
 
-	if (loading) {
+	if (posts.length === 0) {
 		return (
-			<div className="flex items-center justify-center py-12">
-				<Spinner className="size-8 text-indigo-500"/>
+			<div className="flex flex-col items-center justify-center py-16 gap-2 text-center bg-card border border-border rounded-xl">
+				<p className="text-base font-medium text-foreground">No posts yet</p>
+				<p className="text-sm text-muted-foreground">Be the first to share something!</p>
 			</div>
 		);
 	}
 
 	return (
-		<div className="space-y-6 grid grid-cols-1">
+		<div className="space-y-4">
 			{posts.map((post) => (
 				<PostCard
 					key={post.id}

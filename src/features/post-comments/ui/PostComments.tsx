@@ -96,31 +96,31 @@ export function PostComments({
 	};
 
 	return (
-		<div className="border-t border-gray-100 px-4 sm:px-5 pt-4 pb-4 space-y-4">
+		<div className="border-t border-border px-4 sm:px-5 pt-3 pb-4 space-y-3 bg-muted/30">
 			{!readonly && (
-				<div className="flex gap-3">
+				<div className="flex gap-2.5">
 					<PostCommentAvatar
 						user={currentUser}
-						className="mt-1"
-						fallbackClassName="bg-gradient-to-br from-blue-500 to-purple-600"
+						className="mt-0.5 shrink-0"
+						fallbackClassName="gradient-brand"
 					/>
-					<div className="flex-1 space-y-2">
+					<div className="flex-1 space-y-1.5">
 						<Textarea
-							placeholder="Write a comment... (Enter to submit, Shift+Enter for new line)"
+							placeholder="Write a comment… (Enter to send)"
 							value={commentText}
 							onChange={(e) => setCommentText(e.target.value)}
 							onKeyDown={handleKeyDown}
-							className="min-h-[64px] resize-none text-sm bg-gray-50 border-gray-200 focus-visible:bg-white"
+							className="min-h-[56px] resize-none text-sm bg-card border-border rounded-xl focus-visible:ring-primary/50"
 						/>
 						<div className="flex justify-end">
 							<Button
 								size="sm"
 								onClick={handleSubmit}
 								disabled={addCommentMutation.isPending || commentText.trim().length === 0}
-								className="h-8 px-3 gap-1.5"
+								className="h-7 px-3 gap-1.5 text-xs rounded-lg gradient-brand text-white border-0 hover:opacity-90"
 							>
 								{addCommentMutation.isPending ? <Spinner className="size-3"/> : <Send className="w-3 h-3"/>}
-								<span className="text-xs">Send</span>
+								Send
 							</Button>
 						</div>
 					</div>
@@ -128,7 +128,7 @@ export function PostComments({
 			)}
 
 			{displayedComments.length > 0 && (
-				<div className="space-y-3">
+				<div className="space-y-2.5">
 					{displayedComments.map((comment) => (
 							<PostCommentItem
 								key={comment.id}
@@ -140,42 +140,36 @@ export function PostComments({
 							/>
 						)
 					)}
-					{
-						canLoadMore && (
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={handleLoadMore}
-								disabled={isFetchingNextPage}
-								className="w-full text-xs text-gray-500 hover:text-gray-700 h-8"
-							>
-								{isFetchingNextPage ? (
-									<>
-										<Spinner className="size-3 mr-1.5"/>
-										Loading...
-									</>
-								) : (
-									"Load more post-comments"
-								)}
-							</Button>
-						)
-					}
-					{
-						expanded && (
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={handleShowLess}
-								className="w-full text-xs text-gray-500 hover:text-gray-700 h-8"
-							>
-								Show less
-							</Button>
-						)
-					}
+					{canLoadMore && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={handleLoadMore}
+							disabled={isFetchingNextPage}
+							className="w-full text-xs text-muted-foreground hover:text-foreground h-7 rounded-lg"
+						>
+							{isFetchingNextPage ? (
+								<>
+									<Spinner className="size-3 mr-1.5"/>
+									Loading…
+								</>
+							) : (
+								"Load more comments"
+							)}
+						</Button>
+					)}
+					{expanded && (
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={handleShowLess}
+							className="w-full text-xs text-muted-foreground hover:text-foreground h-7 rounded-lg"
+						>
+							Show less
+						</Button>
+					)}
 				</div>
-			)
-			}
+			)}
 		</div>
-	)
-		;
+	);
 }

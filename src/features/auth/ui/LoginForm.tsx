@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldContent, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { type LoginFormData, loginSchema } from "@/features/auth/model/auth.schemas.ts";
+import { Spinner } from "@/components/ui/spinner";
 
 type LoginFormProps = {
   onSubmit: (data: LoginFormData) => Promise<void> | void;
@@ -29,92 +30,73 @@ export function LoginForm({ onSubmit }: LoginFormProps) {
       await onSubmit(data);
     } catch (error) {
       console.error("Login failed:", error);
-      setError("email", { message: "Invalid login or password" });
+      setError("email", { message: "Invalid email or password" });
     }
   };
 
   return (
-    <form className="mt-8" onSubmit={handleSubmit(handleFormSubmit)}>
-      <div className="rounded-2xl border border-white/30 bg-white/80 p-6 shadow-xl backdrop-blur-xl sm:p-8">
-        <div className="space-y-6">
-          <Field>
-            <FieldLabel htmlFor="login">Email</FieldLabel>
-            <FieldContent>
-              <Input
-                className="border-gray-500"
-                id="login"
-                type="text"
-                autoComplete="username"
-                {...register("email")}
-                aria-invalid={!!errors.email}
-                placeholder="Enter your login"
-              />
-              <FieldError errors={[errors.email]} />
-            </FieldContent>
-          </Field>
+    <form className="space-y-4" onSubmit={handleSubmit(handleFormSubmit)}>
+      <Field>
+        <FieldLabel htmlFor="login">Email</FieldLabel>
+        <FieldContent>
+          <Input
+            id="login"
+            type="text"
+            autoComplete="username"
+            {...register("email")}
+            aria-invalid={!!errors.email}
+            placeholder="you@example.com"
+            className="rounded-lg"
+          />
+          <FieldError errors={[errors.email]} />
+        </FieldContent>
+      </Field>
 
-          <Field>
-            <FieldLabel htmlFor="password">Password</FieldLabel>
-            <FieldContent>
-              <Input
-                className="border-gray-500"
-                id="password"
-                type="password"
-                autoComplete="current-password"
-                {...register("password")}
-                aria-invalid={!!errors.password}
-                placeholder="Enter your password"
-              />
-              <FieldError errors={[errors.password]} />
-            </FieldContent>
-          </Field>
+      <Field>
+        <FieldLabel htmlFor="password">Password</FieldLabel>
+        <FieldContent>
+          <Input
+            id="password"
+            type="password"
+            autoComplete="current-password"
+            {...register("password")}
+            aria-invalid={!!errors.password}
+            placeholder="••••••••"
+            className="rounded-lg"
+          />
+          <FieldError errors={[errors.password]} />
+        </FieldContent>
+      </Field>
 
-          <div>
-            <Controller
-              control={control}
-              name="remember"
-              render={({ field }) => (
-                <Field orientation="horizontal">
-                  <FieldLabel htmlFor="remember-me" className="flex items-center justify-center">
-                    <Checkbox
-                      className="border-gray-500"
-                      id="remember-me"
-                      checked={!!field.value}
-                      onCheckedChange={(checked) => field.onChange(checked === true)}
-                    />
-                    Remember me
-                  </FieldLabel>
-                </Field>
-              )}
-            />
-
-            <div className="text-sm text-center">
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">
-                Forgot your password?
-              </a>
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white transition-colors ${
-              isSubmitting
-                ? "bg-indigo-400 cursor-not-allowed"
-                : "bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            }`}
-          >
-            {isSubmitting ? (
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : (
-              "Sign in"
-            )}
-          </button>
-        </div>
+      <div className="flex items-center justify-between">
+        <Controller
+          control={control}
+          name="remember"
+          render={({ field }) => (
+            <Field orientation="horizontal">
+              <FieldLabel htmlFor="remember-me" className="flex items-center gap-2 cursor-pointer">
+                <Checkbox
+                  id="remember-me"
+                  checked={!!field.value}
+                  onCheckedChange={(checked) => field.onChange(checked === true)}
+                />
+                <span className="text-sm text-muted-foreground">Remember me</span>
+              </FieldLabel>
+            </Field>
+          )}
+        />
+        <a href="#" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+          Forgot password?
+        </a>
       </div>
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold text-white gradient-brand shadow-sm hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+      >
+        {isSubmitting ? <Spinner className="h-4 w-4 text-white" /> : "Sign in"}
+      </button>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
@@ -8,39 +9,96 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/features/auth/context/useAuth.ts";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Home, Menu, X, MessageCircle, Bell, Compass } from "lucide-react";
+
+const NAV_LINKS = [
+	{ to: "/feeds", label: "Home", icon: Home },
+	{ to: "/explore", label: "Explore", icon: Compass },
+	{ to: "/messages", label: "Messages", icon: MessageCircle },
+];
 
 export function AppHeader() {
+	const [mobileOpen, setMobileOpen] = useState(false);
+	const location = useLocation();
+
 	return (
-		<header
-			className="sticky top-0 z-40 w-full border-b border-border bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+		<header className="sticky top-0 z-40 w-full border-b border-border bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80 shadow-sm">
 			<div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
-				<div className="flex items-center gap-3">
-					<div
-						className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground text-xs font-semibold">
+				{/* Brand */}
+				<Link to="/feeds" className="flex items-center gap-2.5 shrink-0">
+					<div className="gradient-brand flex h-8 w-8 items-center justify-center rounded-lg text-white text-xs font-bold tracking-tight shadow-sm">
 						IAM
 					</div>
-					<div className="flex flex-col leading-tight">
-						<span className="text-sm font-semibold text-foreground">iam-app</span>
-						<span className="text-xs text-muted-foreground">Identity & Access</span>
-					</div>
-				</div>
+					<span className="text-sm font-semibold text-foreground hidden sm:block">iam-app</span>
+				</Link>
 
-				<nav className="hidden md:flex items-center gap-6">
-					<a href="#"
-						className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-						Feeds
-					</a>
-					<a href="#"
-						className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-						Feeds
-					</a>
+				{/* Desktop Nav */}
+				<nav className="hidden md:flex items-center gap-1">
+					{NAV_LINKS.map(({ to, label, icon: Icon }) => {
+						const active = location.pathname.startsWith(to);
+						return (
+							<Link
+								key={to}
+								to={to}
+								className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+									active
+										? "bg-primary/10 text-primary"
+										: "text-muted-foreground hover:text-foreground hover:bg-accent"
+								}`}
+							>
+								<Icon className="w-4 h-4" />
+								{label}
+							</Link>
+						);
+					})}
 				</nav>
 
+				{/* Right: notifications + user */}
 				<div className="flex items-center gap-2">
-					<UserMenu/>
+					<button
+						type="button"
+						className="relative hidden sm:flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+						aria-label="Notifications"
+					>
+						<Bell className="w-4 h-4" />
+					</button>
+					<UserMenu />
+					{/* Mobile menu toggle */}
+					<button
+						type="button"
+						onClick={() => setMobileOpen((v) => !v)}
+						className="md:hidden flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+						aria-label="Toggle menu"
+					>
+						{mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+					</button>
 				</div>
 			</div>
+
+			{/* Mobile Nav drawer */}
+			{mobileOpen && (
+				<div className="md:hidden border-t border-border bg-card px-4 py-3 space-y-1">
+					{NAV_LINKS.map(({ to, label, icon: Icon }) => {
+						const active = location.pathname.startsWith(to);
+						return (
+							<Link
+								key={to}
+								to={to}
+								onClick={() => setMobileOpen(false)}
+								className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+									active
+										? "bg-primary/10 text-primary"
+										: "text-muted-foreground hover:text-foreground hover:bg-accent"
+								}`}
+							>
+								<Icon className="w-4 h-4" />
+								{label}
+							</Link>
+						);
+					})}
+				</div>
+			)}
 		</header>
 	);
 }
@@ -59,7 +117,6 @@ function UserMenu() {
 
 	const handleLogout = () => {
 		logout();
-		// navigate("/login");
 	};
 
 	return (
@@ -67,28 +124,40 @@ function UserMenu() {
 			<DropdownMenuTrigger asChild>
 				<button
 					type="button"
-					className="flex items-center gap-2 rounded-full bg-transparent hover:bg-accent focus:bg-accent data-[state=open]:bg-accent/60 px-2 py-1"
+					className="flex items-center gap-2 rounded-full hover:bg-accent focus:bg-accent data-[state=open]:bg-accent/60 px-1.5 py-1 transition-colors"
 					aria-label="User menu"
 				>
-					<span className="text-sm font-medium text-foreground hidden sm:inline">{label}</span>
-					<Avatar size="sm">
-						<AvatarImage alt={label}/>
-						<AvatarFallback>{initials || "U"}</AvatarFallback>
+					<Avatar size="sm" className="ring-2 ring-primary/20">
+						<AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${label}`} alt={label} />
+						<AvatarFallback className="gradient-brand text-white text-xs font-semibold">
+							{initials || "U"}
+						</AvatarFallback>
 					</Avatar>
+					<span className="text-sm font-medium text-foreground hidden sm:inline max-w-[120px] truncate">
+						{label}
+					</span>
 				</button>
 			</DropdownMenuTrigger>
 
-			<DropdownMenuContent align="end" sideOffset={8} className="w-64">
+			<DropdownMenuContent align="end" sideOffset={8} className="w-56">
 				<DropdownMenuLabel className="p-0">
-					<div className="px-3 py-2">
-						<div className="text-sm font-medium text-foreground">{label}</div>
-						<div className="text-xs text-muted-foreground">Signed in</div>
+					<div className="px-3 py-2.5 flex items-center gap-2.5">
+						<Avatar size="sm" className="ring-2 ring-primary/20 shrink-0">
+							<AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${label}`} alt={label} />
+							<AvatarFallback className="gradient-brand text-white text-xs font-semibold">
+								{initials || "U"}
+							</AvatarFallback>
+						</Avatar>
+						<div className="min-w-0">
+							<p className="text-sm font-semibold text-foreground truncate">{label}</p>
+							<p className="text-xs text-muted-foreground">Signed in</p>
+						</div>
 					</div>
 				</DropdownMenuLabel>
-				<DropdownMenuSeparator/>
+				<DropdownMenuSeparator />
 
 				<DropdownMenuItem asChild>
-					<Link to="/profile">View my profile</Link>
+					<Link to="/profile">View profile</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
 					<Link to="/settings">Settings</Link>
@@ -97,11 +166,13 @@ function UserMenu() {
 					<Link to="/followers">Followers</Link>
 				</DropdownMenuItem>
 				<DropdownMenuItem asChild>
-					<Link to="/followings">Followings</Link>
+					<Link to="/followings">Following</Link>
 				</DropdownMenuItem>
 
-				<DropdownMenuSeparator/>
-				<DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
+				<DropdownMenuSeparator />
+				<DropdownMenuItem onSelect={handleLogout} className="text-destructive focus:text-destructive focus:bg-destructive/10">
+					Sign out
+				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
 	);

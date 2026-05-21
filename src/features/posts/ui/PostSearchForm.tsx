@@ -60,88 +60,67 @@ export function PostSearchForm({ onSearch, isLoading = false }: PostSearchFormPr
 
   return (
     <Form {...form}>
-      <form 
-        onSubmit={form.handleSubmit(handleSubmit)} 
-        className="bg-white rounded-lg border border-gray-200 shadow-sm p-4"
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="bg-card border border-border rounded-xl px-4 py-3 flex flex-col sm:flex-row gap-2"
       >
-        <div className="space-y-3">
-          {/* Search Input - Full Width */}
-          <FormField
-            control={form.control}
-            name="keyword"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="sr-only">Search</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search posts by keyword..."
-                      className="pl-10"
-                      disabled={isLoading}
-                      onKeyDown={handleKeyDown}
-                      {...field}
-                    />
-                  </div>
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Sort and Buttons Row */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:justify-between">
-            {/* Sort Dropdown - Left */}
-            <FormField
-              control={form.control}
-              name="sortField"
-              render={({ field }) => (
-                <FormItem className="w-full sm:w-64">
-                  <FormLabel className="sr-only">Sort by</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+        {/* Search input */}
+        <FormField
+          control={form.control}
+          name="keyword"
+          render={({ field }) => (
+            <FormItem className="flex-1">
+              <FormLabel className="sr-only">Search</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search posts…"
+                    className="pl-9 rounded-lg bg-muted/50 border-border focus-visible:bg-card"
                     disabled={isLoading}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Sort by..." />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value={PostSortField.TITLE}>Title</SelectItem>
-                      <SelectItem value={PostSortField.CONTENT}>Content</SelectItem>
-                      <SelectItem value={PostSortField.LIKES}>Likes</SelectItem>
-                      <SelectItem value={PostSortField.CREATED}>Created Date</SelectItem>
-                      <SelectItem value={PostSortField.UPDATED}>Updated Date</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormItem>
-              )}
-            />
+                    onKeyDown={handleKeyDown}
+                    {...field}
+                  />
+                </div>
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
-            {/* Buttons - Right */}
-            <div className="flex gap-2">
-              <Button 
-                type="submit"
-                disabled={isLoading}
-                className="flex-1 sm:flex-none"
-              >
-                <Search className="h-4 w-4 mr-2" />
-                Search
-              </Button>
+        {/* Sort */}
+        <FormField
+          control={form.control}
+          name="sortField"
+          render={({ field }) => (
+            <FormItem className="w-full sm:w-40">
+              <FormLabel className="sr-only">Sort by</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
+                <FormControl>
+                  <SelectTrigger className="rounded-lg bg-muted/50 border-border">
+                    <SelectValue placeholder="Sort by…" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value={PostSortField.TITLE}>Title</SelectItem>
+                  <SelectItem value={PostSortField.CONTENT}>Content</SelectItem>
+                  <SelectItem value={PostSortField.LIKES}>Likes</SelectItem>
+                  <SelectItem value={PostSortField.CREATED}>Newest</SelectItem>
+                  <SelectItem value={PostSortField.UPDATED}>Updated</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
 
-              <Button 
-                type="button"
-                variant="outline"
-                onClick={handleClear}
-                disabled={isLoading}
-                className="flex-1 sm:flex-none"
-              >
-                <X className="h-4 w-4 mr-2" />
-                Clear
-              </Button>
-            </div>
-          </div>
+        {/* Buttons */}
+        <div className="flex gap-2 shrink-0">
+          <Button type="submit" disabled={isLoading} size="sm" className="rounded-lg px-4">
+            <Search className="h-3.5 w-3.5 mr-1.5" />
+            Search
+          </Button>
+          <Button type="button" variant="outline" onClick={handleClear} disabled={isLoading} size="sm" className="rounded-lg px-3">
+            <X className="h-3.5 w-3.5" />
+          </Button>
         </div>
       </form>
     </Form>
