@@ -1,7 +1,12 @@
 import { useState, useMemo } from "react";
 import type { PostTypes } from "@/features/posts/model/post.types.ts";
 import type { PostSearchFormValues, PostSearchRequest } from "@/features/posts/model/postSearch.types.ts";
-import { usePostsQuery, useUpdatePostMutation, useCreatePostMutation } from "@/features/posts/queries/post.queries.ts";
+import {
+  usePostsQuery,
+  useUpdatePostMutation,
+  useCreatePostMutation,
+  preparePostPayload,
+} from "@/features/posts/queries/post.queries.ts";
 import { PostList } from "@/features/posts/ui/PostList";
 import { PostActions } from "@/features/posts/ui/PostActions";
 import { PostSearchForm } from "@/features/posts/ui/PostSearchForm";
@@ -49,24 +54,13 @@ export default function Feeds() {
     toast.info("Report functionality coming soon");
   };
 
-  const handleUpdate = async (postId: number, values: { title: string; content: string }) => {
-    await updatePostMutation.mutateAsync({ postId, values });
+  const handleUpdate = async (postId: number, values: { title: string; content: string; image?: File }) => {
+    const formData = preparePostPayload(values);
+    await updatePostMutation.mutateAsync({ postId, formData });
   };
 
   const handleCreate = async (values: { title: string; content: string; image?: File }) => {
-    const formData = new FormData();
-
-    formData.append(
-      "post",
-      new Blob([JSON.stringify({ title: values.title, content: values.content })], {
-        type: "application/json",
-      }),
-    );
-
-    if (values.image) {
-      formData.append("image", values.image);
-    }
-
+    const formData = preparePostPayload(values);
     await createPostMutation.mutateAsync(formData);
   };
 

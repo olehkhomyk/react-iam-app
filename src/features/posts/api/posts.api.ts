@@ -1,7 +1,7 @@
 import { http } from '@/app/api/http';
 import type { ApiResponse } from '@/features/auth/model/auth.types.ts';
 import type { SearchPostsParams } from '@/features/posts/model/postSearch.types.ts';
-import type { PostSavePayload, PostTypes } from '@/features/posts/model/post.types.ts';
+import type { PostTypes } from '@/features/posts/model/post.types.ts';
 import type { PaginationResponse } from '@/shared/model/Pagination';
 
 export async function searchPosts({
@@ -30,8 +30,8 @@ export async function createPost(formData: FormData): Promise<PostTypes> {
 	return response.data.payload;
 }
 
-export async function updatePost(postId: number, values: PostSavePayload): Promise<PostTypes> {
-	const response = await http.put<ApiResponse<PostTypes>>(`/posts/${postId}`, values);
+export async function updatePost(postId: number, formData: FormData): Promise<PostTypes> {
+	const response = await http.put<ApiResponse<PostTypes>>(`/posts/${postId}`, formData);
 	return response.data.payload;
 }
 
