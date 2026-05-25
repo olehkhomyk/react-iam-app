@@ -14,6 +14,10 @@ export function useInfiniteCommentsQuery(postId: number, enabled: boolean) {
 			const totalFetched = sumBy(_allPages, p => p.content.length);
 			return totalFetched < lastPage.pagination.total ? lastPageParam + 1 : undefined;
 		},
+		select: (data) => ({
+			...data,
+			pagination: data.pages[0]?.pagination,
+		}),
 		enabled,
 		staleTime: 1000 * 60,
 	});

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, MessageCircle, Share2, MoreVertical } from "lucide-react";
@@ -17,6 +17,7 @@ import { PostComments } from "@/features/post-comments/ui/PostComments";
 import { isPostLiked } from "@/shared/helper/post-like.helper.ts";
 import { useAuth } from "@/features/auth/context/useAuth.ts";
 import { useLikePostMutation, useUnlikePostMutation } from "@/features/posts/queries/postLikes.queries.ts";
+import { useInfiniteCommentsQuery } from "@/features/posts/queries/postComments.queries.ts";
 
 interface PostCardProps {
   post: PostTypes;
@@ -34,8 +35,9 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
   const likeCount = isLikeInPending ? post.likesCount + (likedByServer ? -1 : 1) : post.likesCount;
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [addedCommentsCount, setAddedCommentsCount] = useState(0);
-  const totalComments = post.totalComments + addedCommentsCount;
+
+  const { data: commentsData } = useInfiniteCommentsQuery(post.id, false);
+  const totalComments = commentsData?.pagination?.total ?? post.totalComments;
 
   const likePostMutation = useLikePostMutation();
   const unlikePostMutation = useUnlikePostMutation();
@@ -60,10 +62,6 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
     }
   };
 
-  const handleCommentWasAdded = useCallback(() => {
-    setAddedCommentsCount((prev) => prev + 1);
-  }, []);
-
   return (
     <article className="bg-card border border-border rounded-xl overflow-hidden card-hover">
       {/* Author row */}
@@ -84,7 +82,11 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
         {visibleActions.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground rounded-lg"
+              >
                 <MoreVertical className="w-4 h-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -97,7 +99,9 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
                   <DropdownMenuItem
                     onClick={() => action.onClick(post)}
                     className={`cursor-pointer ${
-                      action.variant === "destructive" ? "text-destructive focus:text-destructive focus:bg-destructive/10" : ""
+                      action.variant === "destructive"
+                        ? "text-destructive focus:text-destructive focus:bg-destructive/10"
+                        : ""
                     }`}
                   >
                     <action.icon className="w-4 h-4 mr-2" />
@@ -185,8 +189,7 @@ export function PostCard({ post, onShare, actions = [] }: PostCardProps) {
       <PostComments
         postId={post.id}
         initialComments={post.previewComments}
-        totalComments={totalComments}
-        newCommentAdded={handleCommentWasAdded}
+        initialTotalQuantity={post.totalComments}
         readonly={false}
       />
     </article>
