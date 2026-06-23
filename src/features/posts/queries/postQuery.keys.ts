@@ -7,5 +7,7 @@ export const postQueryKeys = {
 
 	comments: (postId: number) => ['comments', postId] as const,
 	commentsPage: (postId: number, page: number) => ['comments', postId, page] as const,
+
+	replies: (postId: number, commentId: number) => ['replies', postId, commentId] as const,
 };
 

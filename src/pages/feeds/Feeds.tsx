@@ -17,9 +17,12 @@ import { DynamicPagination } from "@/shared/ui/dynamic-pagination/DynamicPaginat
 import { useAuth } from "@/features/auth/context/useAuth.ts";
 import { toast } from "sonner";
 import { PenSquare, TrendingUp, Users, Hash } from "lucide-react";
+// import { getCommentReply } from "@/shared/api/test.api.ts";
 
 export default function Feeds() {
   const { user } = useAuth();
+
+  // getCommentReply();
 
   const [page, setPage] = useState(1);
   const limit = 5;

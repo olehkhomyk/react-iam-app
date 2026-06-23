@@ -22,3 +22,23 @@ export function useUnlikePostCommentMutation(postId: number) {
 		},
 	});
 }
+
+export function useLikeReplyMutation(postId: number, commentId: number) {
+	return useMutation({
+		mutationFn: (replyId: number) => likePostComment(postId, replyId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: postQueryKeys.replies(postId, commentId) });
+			queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
+		},
+	});
+}
+
+export function useUnlikeReplyMutation(postId: number, commentId: number) {
+	return useMutation({
+		mutationFn: (replyId: number) => unlikePostComment(postId, replyId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: postQueryKeys.replies(postId, commentId) });
+			queryClient.invalidateQueries({ queryKey: postQueryKeys.comments(postId) });
+		},
+	});
+}

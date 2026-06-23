@@ -4,6 +4,7 @@ import type { SearchPostsParams } from '@/features/posts/model/postSearch.types.
 import type { PostTypes } from '@/features/posts/model/post.types.ts';
 import type { PaginationResponse } from '@/shared/model/Pagination';
 
+
 export async function searchPosts({
 	page,
 	limit,
