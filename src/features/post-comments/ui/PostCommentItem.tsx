@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PostCommentAvatar } from "@/features/post-comments/ui/PostCommentAvatar";
-import { PostCommentReplies } from "@/features/post-comments/ui/PostCommentReplies";
+// import { PostCommentReplies } from "@/features/post-comments/ui/PostCommentReplies";
 import type { PostComment } from "@/features/post-comments/model/postComment.ts";
 import {
   useLikePostCommentMutation,
@@ -10,6 +10,7 @@ import {
 } from "@/features/post-comments/queries/commentLike.queries.ts";
 import { formatDate } from "@/features/posts/utils/utils.ts";
 import { isCommentLiked } from "@/shared/helper/comment-like.helper";
+import { PostCommentRepliesSaga } from "@/features/post-comments/redux-saga-sample/PostCommentRepliesSaga.tsx";
 
 interface PostCommentItemProps {
   comment: PostComment;
@@ -82,7 +83,7 @@ export function PostCommentItem({ comment, postId, currentUserId, showLikes, rea
         </div>
       </div>
       {showReplies && (
-        <PostCommentReplies
+        <PostCommentRepliesSaga
           postId={postId}
           commentId={comment.id}
           repliesCount={comment.repliesCount}
